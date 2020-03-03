@@ -17,6 +17,9 @@ urlpatterns = [path("lti/", include("django_lti_tool_provider.urls"))]
 
 # Apps
 urlpatterns += i18n_patterns(
+    path(
+        "feedback/", include("user_feedback.urls", namespace="user_feedback")
+    ),
     path("reputation/", include("reputation.urls", namespace="reputation")),
     path("quality/", include("quality.urls", namespace="quality")),
     path("tos/", include("tos.urls")),

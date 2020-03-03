@@ -28,8 +28,11 @@
   <link href="{% static 'peerinst/img/SALTISE-logo-icon.gif' %}" rel="apple-touch-icon">
   {% compress css file main %}
   <link href="{% static 'peerinst/css/main.min.css' %}" rel="stylesheet">
+  {% endcompress %} -->
+  <!-- UserFeedback -->
+  {% compress js %}
+  <script src="{% static 'user_feedback/js/scripts.min.js' %}" defer="true"></script>
   {% endcompress %}
-
   <!-- Cookie law -->
   {% if not request.session.LTI %}
   {% compress js file cookie_law %}
@@ -76,6 +79,7 @@
       </div>
     </div>
     <div id="header-right">
+      <div id="user-feedback-container"></div>
       {% block header-right %}{% endblock %}
     </div>
     <div id="header-background"></div>
@@ -104,6 +108,17 @@
 
   {% script type="text/javascript" %}
   <script>
+
+    window.addEventListener("load", function() {
+    userFeedback.injectDialog(
+      "{% trans 'Let us know how we can improve your experience!' %}",
+      "{% static 'peerinst/brand/SCIVERO-LOGO-DARK.png' %}",
+      "{% trans 'Thanks for your feedback!' %}",
+      "{% trans 'Sorry, please try again later!' %}",
+      "{% url 'user_feedback:post' %}"
+    );
+  });
+
   if (document.querySelector('.mdc-drawer--temporary')){
     var drawer = new bundle.drawer.MDCTemporaryDrawer(document.querySelector('.mdc-drawer--temporary'));
     document.querySelector('#menu-icon').addEventListener('click', function() {
