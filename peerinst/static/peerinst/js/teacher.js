@@ -13,3 +13,5 @@ export {
 export {
   init as initRationalesToScoreCards,
 } from "./_teacher/dashboard/rationales.js";
+
+export { init as initSearchFlag } from "./_teacher/questions.js";

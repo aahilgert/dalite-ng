@@ -32,6 +32,7 @@ from .models import (
     StudentGroupMembership,
     StudentNotification,
     StudentNotificationType,
+    Subject,
     Teacher,
     TeacherNotification,
 )
@@ -114,7 +115,6 @@ class AnswerInline(admin.StackedInline):
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
     pass
-
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
@@ -214,6 +214,9 @@ class CategoryAdmin(admin.ModelAdmin):
 class DisciplineAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    filter_horizontal = ['categories']
 
 @admin.register(Institution)
 class InstitutionAdmin(admin.ModelAdmin):

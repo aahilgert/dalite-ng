@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import json
 import random
 from datetime import datetime
@@ -9,12 +6,20 @@ import ddt
 import mock
 import pytz
 from django.contrib.auth.models import User
-from django.urls import reverse
 from django.test import TestCase
+from django.urls import reverse
 from django_lti_tool_provider.models import LtiUserData
 from django_lti_tool_provider.views import LTIView
 
-from peerinst.models import Answer, LtiEvent, Question, ShownRationale
+from peerinst.forms import SignUpForm
+from peerinst.models import (
+    Answer,
+    LtiEvent,
+    NewUserRequest,
+    Question,
+    ShownRationale,
+    UserUrl,
+)
 from peerinst.tests import factories
 from peerinst.util import SessionStageData
 from quality.models import UsesCriterion
@@ -556,3 +561,36 @@ class EventLogTest(QuestionViewTestCase):
         lti_params["context_id"] = self.COURSE_ID
         self.log_in_with_lti(lti_params=lti_params)
         self._test_events(logger, is_edx_course_id=False)
+
+
+def test_signup__get(client):
+    resp = client.get(reverse("sign_up"))
+    assert "registration/sign_up.html" in [t.name for t in resp.templates]
+    assert isinstance(resp.context["form"], SignUpForm)
+
+
+def test_signup__post(client, mocker):
+    data = {"username": "test", "email": "test@test.com", "url": "test.com"}
+    mail_admins = mocker.patch("peerinst.views.views.mail_admins_async")
+    resp = client.post(reverse("sign_up"), data)
+    assert "registration/sign_up_done.html" in [t.name for t in resp.templates]
+    assert User.objects.filter(
+        username=data["username"], email=data["email"]
+    ).exists()
+    assert (
+        UserUrl.objects.get(user__username=data["username"]).url
+        == f"http://{data['url']}"
+    )
+    assert NewUserRequest.objects.filter(
+        user__username=data["username"]
+    ).exists()
+    mail_admins.assert_called_once()
+
+
+def test_signup__backend_missing(client, mocker):
+    data = {"username": "test", "email": "test@test.com", "url": "test.com"}
+    settings = mocker.patch("peerinst.views.views.settings")
+    settings.EMAIL_BACKEND = ""
+    mail_admins = mocker.patch("peerinst.views.views.mail_admins_async")
+    resp = client.post(reverse("sign_up"), data)
+    assert resp.status_code == 503

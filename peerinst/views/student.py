@@ -22,6 +22,7 @@ from ..models import (
     StudentGroupAssignment,
     StudentGroupMembership,
     StudentNotification,
+    StudentGroupCourse,
 )
 from ..students import (
     authenticate_student,
@@ -324,6 +325,18 @@ def index_page(req):
         },
         "groups": [
             {
+                "connected_course_url": None
+                if not StudentGroupCourse.objects.filter(
+                    student_group=group.group
+                )
+                else reverse(
+                    "course_flow:student-course-detail-view",
+                    kwargs={
+                        "pk": StudentGroupCourse.objects.get(
+                            student_group=group.group
+                        ).course.pk
+                    },
+                ),
                 "name": group.group.name,
                 "title": group.group.title,
                 "notifications": group.send_emails,
@@ -371,6 +384,7 @@ def index_page(req):
             ),
             "assignment_expired": ugettext("Past due date"),
             "cancel": ugettext("Cancel"),
+            "course_flow_button": ugettext("Visit this group's CourseFlow"),
             "completed": ugettext("Completed"),
             "day": ugettext("day"),
             "days": ugettext("days"),

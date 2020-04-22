@@ -135,7 +135,10 @@ def init_message_types(sender, **kwargs):
 
 @receiver(post_migrate)
 def init_user_types(sender, **kwargs):
-    types = [{"type": "teacher"}, {"type": "student"}]
+    types = [
+        {"type": "teacher"},
+        {"type": "researcher"},
+    ]
     for type_ in types:
         if not UserType.objects.filter(type=type_["type"]).exists():
             UserType.objects.create(**type_)

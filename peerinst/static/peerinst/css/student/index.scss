@@ -8,6 +8,11 @@ i {
   padding-top: 0;
 }
 
+.course-flow-button {
+  cursor: pointer;
+  transform: translate(-5px, 4px);
+}
+
 #student-add-group {
   & .admin-link {
     color: #a9a9a9;

@@ -1,6 +1,8 @@
 import pytest
 
-from quality.models import Quality, QualityType, QualityUseType
+from quality.models import Quality, QualityType, QualityUseType, UsesCriterion
+
+from ..criterion import neg_words_criterion, neg_words_rules  # noqa
 
 
 @pytest.fixture
@@ -8,6 +10,20 @@ def global_validation_quality():
     return Quality.objects.get(
         quality_type__type="global", quality_use_type__type="validation"
     )
+
+
+@pytest.fixture
+def global_validation_quality_with_criteria(
+    global_validation_quality, neg_words_rules, neg_words_criterion
+):
+    UsesCriterion.objects.create(
+        quality=global_validation_quality,
+        name=neg_words_criterion.name,
+        version=neg_words_criterion.version,
+        rules=neg_words_rules.pk,
+        weight=1,
+    )
+    return global_validation_quality
 
 
 @pytest.fixture

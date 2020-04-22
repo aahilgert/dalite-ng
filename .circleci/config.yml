@@ -30,7 +30,7 @@ jobs:
           command: |
             python -m venv .venv
             . .venv/bin/activate
-            pip install -r requirements/dev-requirements.txt
+            pip install -r requirements/requirements-dev.txt
             yarn install
             yarn run gulp build
       - run:

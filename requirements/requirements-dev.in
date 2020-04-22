@@ -1,5 +1,5 @@
--r requirements.txt
--r test-requirements.txt
+-r requirements-base.txt
+-r requirements-test.txt
 
 bandit
 black

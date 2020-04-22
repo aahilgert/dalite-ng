@@ -1,5 +1,11 @@
 "use strict";
 import flatpickr from "flatpickr";
+import { MDCSnackbar } from "@material/snackbar";
+
+export function getSnack() {
+  const snackbar = new MDCSnackbar(document.querySelector(".mdc-snackbar"));
+  return snackbar;
+}
 
 function editField(event, type, className) {
   const iconContainer = event.currentTarget.parentNode.parentNode;

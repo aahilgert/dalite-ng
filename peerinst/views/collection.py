@@ -24,8 +24,11 @@ from dalite.views.utils import get_json_params
 from .decorators import teacher_required
 from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
+from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.utils.translation import ugettext_lazy as _
 
 
 class CollectionForm(ModelForm):
@@ -43,7 +46,7 @@ class CollectionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         teacher = kwargs.pop("teacher")
         super(CollectionForm, self).__init__(*args, **kwargs)
-        self.fields["assignments"].queryset = teacher.assignments.all()
+        self.fields["private"].initial = True
         self.fields["discipline"].queryset = teacher.disciplines.all()
 
 
@@ -86,11 +89,6 @@ class CollectionDetailView(LoginRequiredMixin, NoStudentsMixin, DetailView):
         context = super(DetailView, self).get_context_data(**kwargs)
         collection = self.get_object()
         context["collection_data"] = collection_data(collection=collection)
-        context["assignment_data"] = {}
-        for assignment in collection.assignments.all():
-            context["assignment_data"][assignment.pk] = assignment_data(
-                assignment=assignment
-            )
         return context
 
 
@@ -100,6 +98,59 @@ def assignment_data(assignment):
     """
     q_sums, q_students = get_assignment_aggregates(assignment=assignment)
     return q_sums
+
+
+def collection_paginate(request):
+
+    if not Teacher.objects.filter(user=request.user).exists():
+        return HttpResponse(
+            _(
+                "You must be logged in as a teacher to search the database. "
+                "Log in again with a teacher account."
+            )
+        )
+
+    if request.method == "GET" and request.user.is_authenticated:
+        page = int(request.GET.get("page", default=1))
+        id = int(request.GET.get("collection_pk"))
+        assignments = Collection.objects.get(pk=id).assignments.all()
+
+        paginator = Paginator(list(assignments), 3)
+
+        try:
+            page_assignments = paginator.get_page(page)
+        except PageNotAnInteger:
+            page_assignments = paginator.get_page(1)
+        except EmptyPage:
+            page_assignments = paginator.get_page(paginator.num_pages)
+
+        if assignments.count() > 3:
+            is_multiple_pages = True
+        else:
+            is_multiple_pages = False
+
+        assignment_data = {}
+        context = {
+            "paginator": page_assignments,
+            "is_multiple_pages": is_multiple_pages,
+            "assignment_data": assignment_data,
+        }
+
+        for assignment in assignments:
+            (
+                context["assignment_data"][assignment.pk],
+                q_students,
+            ) = get_assignment_aggregates(assignment=assignment)
+
+        return TemplateResponse(
+            request,
+            "peerinst/collection/collection_detail_page.html",
+            context=context,
+        )
+    else:
+        return HttpResponse(
+            _("An error occurred.  Retry search after logging in again.")
+        )
 
 
 def collection_data(collection):
@@ -303,13 +354,22 @@ def collection_add_assignment(request, teacher):
         return args
     (group_pk,), _ = args
 
+    student_group = get_object_or_404(StudentGroup, pk=group_pk)
+
+    title = (student_group.title + "'s curriculum")[:40]
+    description = (
+        "This collection contains all assignments that have been assigned to "
+        + student_group.title
+        + "'s students."
+    )[:200]
+
     collection = Collection.objects.create(
         discipline=teacher.disciplines.first(),
         owner=teacher,
-        title="temporary text",
-        description="temporary text",
+        title=title,
+        description=description,
     )
-    student_group = get_object_or_404(StudentGroup, pk=group_pk)
+
     student_group_assignments = student_group.studentgroupassignment_set.all()
     for assignment in student_group_assignments:
         if assignment.assignment not in collection.assignments.all():

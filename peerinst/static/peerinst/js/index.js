@@ -354,6 +354,320 @@ export function bindCategoryAutofill(source) {
   });
 }
 
+export function bindUsernameAutofill(source) {
+  function updateSelect(el, formId) {
+    el.remove();
+    $(formId)
+      .find("[value=" + $(el).attr("v") + "]")
+      .remove();
+  }
+
+  // Generators for autocomplete
+  const response = function(searchClass, spinnerId) {
+    return function(event, ui) {
+      // NB: Pass by reference.  ui can be modified, but not recreated.
+      const currentList = $.map($(searchClass), function(obj, i) {
+        return $(obj).attr("d");
+      });
+
+      const tmp = ui.content.filter(function(el) {
+        return !currentList.includes(el.label);
+      });
+
+      let l = ui.content.length;
+      while (l > 0) {
+        ui.content.pop();
+        l = ui.content.length;
+      }
+
+      for (let i = 0; i < tmp.length; i++) {
+        ui.content.push(tmp[i]);
+      }
+
+      if (ui.content.length == 0) {
+        // Could add hint that there are no results
+      }
+
+      $(spinnerId).css("opacity", 0);
+      return;
+    };
+  };
+
+  const search = function(spinnerId) {
+    return function(event, ui) {
+      $(spinnerId).css("opacity", 1);
+    };
+  };
+
+  const focus = function(event, ui) {
+    event.preventDefault();
+    $(this).val(ui.item.label); // eslint-disable-line no-invalid-this
+  };
+
+  const select = function(currentIds, className, formId) {
+    return function(event, ui) {
+      event.preventDefault();
+      $(this).val(""); // eslint-disable-line no-invalid-this
+
+      const newDiv = document.createElement("div");
+      newDiv.setAttribute("d", ui.item.label);
+      newDiv.setAttribute("v", ui.item.value);
+      newDiv.setAttribute("tabindex", "0");
+      newDiv.setAttribute("data-mdc-auto-init", "MDCChip");
+      newDiv.classList.add("mdc-chip", "mdc-typography--caption", className);
+      newDiv.addEventListener("click", function() {
+        updateSelect(this, formId); // eslint-disable-line no-invalid-this
+      });
+      const text = document.createElement("div");
+      text.classList.add("mdc-chip__text");
+      text.textContent = ui.item.label;
+      newDiv.appendChild(text);
+      const icon = document.createElement("i");
+      icon.classList.add(
+        "material-icons",
+        "mdc-chip__icon",
+        "mdc-chip__icon--trailing",
+      );
+      icon.setAttribute("tabindex", "0");
+      icon.setAttribute("role", "button");
+      icon.textContent = "cancel";
+      newDiv.appendChild(icon);
+      document.getElementById(currentIds).appendChild(newDiv);
+
+      $(formId).append(
+        "<option selected='selected' value=" +
+          ui.item.value +
+          ">" +
+          ui.item.label +
+          "</option>",
+      );
+    };
+  };
+
+  $("#autofill_usernames").autocomplete({
+    delay: 700,
+    minLength: 3,
+    classes: {
+      "ui-autocomplete": "mdc-typography--body1",
+    },
+    source: source,
+    response: response(".username", "#search_usernames"),
+    search: search("#search_usernames"),
+    focus: focus,
+    select: select("current_usernames", "username", "#id_username"),
+    autoFocus: true,
+  });
+}
+
+export function bindSubjectAutofill(source) {
+  function updateSelect(el, formId) {
+    el.remove();
+    $(formId)
+      .find("[value=" + $(el).attr("v") + "]")
+      .remove();
+  }
+
+  // Generators for autocomplete
+  const response = function(searchClass, spinnerId) {
+    return function(event, ui) {
+      // NB: Pass by reference.  ui can be modified, but not recreated.
+      const currentList = $.map($(searchClass), function(obj, i) {
+        return $(obj).attr("d");
+      });
+
+      const tmp = ui.content.filter(function(el) {
+        return !currentList.includes(el.label);
+      });
+
+      let l = ui.content.length;
+      while (l > 0) {
+        ui.content.pop();
+        l = ui.content.length;
+      }
+
+      for (let i = 0; i < tmp.length; i++) {
+        ui.content.push(tmp[i]);
+      }
+
+      if (ui.content.length == 0) {
+        // Could add hint that there are no results
+      }
+
+      $(spinnerId).css("opacity", 0);
+      return;
+    };
+  };
+
+  const search = function(spinnerId) {
+    return function(event, ui) {
+      $(spinnerId).css("opacity", 1);
+    };
+  };
+
+  const focus = function(event, ui) {
+    event.preventDefault();
+    $(this).val(ui.item.label); // eslint-disable-line no-invalid-this
+  };
+
+  const select = function(currentIds, className, formId) {
+    return function(event, ui) {
+      event.preventDefault();
+      $(this).val(""); // eslint-disable-line no-invalid-this
+
+      const newDiv = document.createElement("div");
+      newDiv.setAttribute("d", ui.item.label);
+      newDiv.setAttribute("v", ui.item.value);
+      newDiv.setAttribute("tabindex", "0");
+      newDiv.setAttribute("data-mdc-auto-init", "MDCChip");
+      newDiv.classList.add("mdc-chip", "mdc-typography--caption", className);
+      newDiv.addEventListener("click", function() {
+        updateSelect(this, formId); // eslint-disable-line no-invalid-this
+      });
+      const text = document.createElement("div");
+      text.classList.add("mdc-chip__text");
+      text.textContent = ui.item.label;
+      newDiv.appendChild(text);
+      const icon = document.createElement("i");
+      icon.classList.add(
+        "material-icons",
+        "mdc-chip__icon",
+        "mdc-chip__icon--trailing",
+      );
+      icon.setAttribute("tabindex", "0");
+      icon.setAttribute("role", "button");
+      icon.textContent = "cancel";
+      newDiv.appendChild(icon);
+      document.getElementById(currentIds).appendChild(newDiv);
+
+      $(formId).append(
+        "<option selected='selected' value=" +
+          ui.item.value +
+          ">" +
+          ui.item.label +
+          "</option>",
+      );
+    };
+  };
+
+  $("#autofill_subjects").autocomplete({
+    delay: 700,
+    minLength: 3,
+    classes: {
+      "ui-autocomplete": "mdc-typography--body1",
+    },
+    source: source,
+    response: response(".subject", "#search_subjects"),
+    search: search("#search_subjects"),
+    focus: focus,
+    select: select("current_subjects", "subject", "#id_subject"),
+    autoFocus: true,
+  });
+}
+
+export function bindDisciplineAutofill(source) {
+  function updateSelect(el, formId) {
+    el.remove();
+    $(formId)
+      .find("[value=" + $(el).attr("v") + "]")
+      .remove();
+  }
+
+  // Generators for autocomplete
+  const response = function(searchClass, spinnerId) {
+    return function(event, ui) {
+      // NB: Pass by reference.  ui can be modified, but not recreated.
+      const currentList = $.map($(searchClass), function(obj, i) {
+        return $(obj).attr("d");
+      });
+
+      const tmp = ui.content.filter(function(el) {
+        return !currentList.includes(el.label);
+      });
+
+      let l = ui.content.length;
+      while (l > 0) {
+        ui.content.pop();
+        l = ui.content.length;
+      }
+
+      for (let i = 0; i < tmp.length; i++) {
+        ui.content.push(tmp[i]);
+      }
+
+      if (ui.content.length == 0) {
+        // Could add hint that there are no results
+      }
+
+      $(spinnerId).css("opacity", 0);
+      return;
+    };
+  };
+
+  const search = function(spinnerId) {
+    return function(event, ui) {
+      $(spinnerId).css("opacity", 1);
+    };
+  };
+
+  const focus = function(event, ui) {
+    event.preventDefault();
+    $(this).val(ui.item.label); // eslint-disable-line no-invalid-this
+  };
+
+  const select = function(currentIds, className, formId) {
+    return function(event, ui) {
+      event.preventDefault();
+      $(this).val(""); // eslint-disable-line no-invalid-this
+
+      const newDiv = document.createElement("div");
+      newDiv.setAttribute("d", ui.item.label);
+      newDiv.setAttribute("v", ui.item.value);
+      newDiv.setAttribute("tabindex", "0");
+      newDiv.setAttribute("data-mdc-auto-init", "MDCChip");
+      newDiv.classList.add("mdc-chip", "mdc-typography--caption", className);
+      newDiv.addEventListener("click", function() {
+        updateSelect(this, formId); // eslint-disable-line no-invalid-this
+      });
+      const text = document.createElement("div");
+      text.classList.add("mdc-chip__text");
+      text.textContent = ui.item.label;
+      newDiv.appendChild(text);
+      const icon = document.createElement("i");
+      icon.classList.add(
+        "material-icons",
+        "mdc-chip__icon",
+        "mdc-chip__icon--trailing",
+      );
+      icon.setAttribute("tabindex", "0");
+      icon.setAttribute("role", "button");
+      icon.textContent = "cancel";
+      newDiv.appendChild(icon);
+      document.getElementById(currentIds).appendChild(newDiv);
+
+      $(formId).append(
+        "<option selected='selected' value=" +
+          ui.item.value +
+          ">" +
+          ui.item.label +
+          "</option>",
+      );
+    };
+  };
+
+  $("#autofill_disciplines").autocomplete({
+    delay: 700,
+    minLength: 3,
+    classes: {
+      "ui-autocomplete": "mdc-typography--body1",
+    },
+    source: source,
+    response: response(".discipline", "#search_disciplines"),
+    search: search("#search_disciplines"),
+    focus: focus,
+    select: select("current_disciplines", "discipline", "#id_discipline"),
+    autoFocus: true,
+  });
+}
 // Create disciplines
 /** Callback for discipline creation
  * @function
@@ -687,9 +1001,8 @@ export function plot(matrix, freq, id) {
 
   const matrixSvg = bundle.select("#matrix-" + id);
   matrixSvg.style("overflow", "visible");
-  let size = matrixSvg.attr("width");
+  let size = +matrixSvg.attr("width");
   const g = matrixSvg.append("g");
-
   g.append("text")
     .attr("class", "legend")
     .attr("x", size / 2)
@@ -728,6 +1041,7 @@ export function plot(matrix, freq, id) {
     .style("font-size", "8pt")
     .style("fill", "white")
     .style("text-anchor", "middle")
+    .attr("pointer-events", "none")
     .text(parseInt(100 * matrix["easy"]) + "%");
 
   const hard = g
@@ -759,6 +1073,7 @@ export function plot(matrix, freq, id) {
     .style("font-size", "8pt")
     .style("fill", "white")
     .style("text-anchor", "middle")
+    .attr("pointer-events", "none")
     .text(parseInt(100 * matrix["hard"]) + "%");
 
   const peer = g
@@ -790,6 +1105,7 @@ export function plot(matrix, freq, id) {
     .style("font-size", "8pt")
     .style("fill", "white")
     .style("text-anchor", "middle")
+    .attr("pointer-events", "none")
     .text(parseInt(100 * matrix["peer"]) + "%");
 
   const tricky = g
@@ -821,6 +1137,7 @@ export function plot(matrix, freq, id) {
     .style("font-size", "8pt")
     .style("fill", "white")
     .style("text-anchor", "middle")
+    .attr("pointer-events", "none")
     .text(parseInt(100 * matrix["tricky"]) + "%");
 
   const firstFreqSvg = bundle.select("#first-frequency-" + id);
@@ -840,7 +1157,7 @@ export function plot(matrix, freq, id) {
     }
   }
 
-  size = secondFreqSvg.attr("width") - margin.left;
+  size = +secondFreqSvg.attr("width") - margin.left;
 
   const x = bundle
     .scaleLinear()

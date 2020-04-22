@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
-
 import json
 
 from django.db import models
 
-from .quality import Quality
 from ..utils import LazyEncoder
+from .quality import Quality
 
 
 class RejectedAnswer(models.Model):
@@ -22,6 +19,7 @@ class RejectedAnswer(models.Model):
             {
                 "rationale": self.rationale,
                 "reasons": json.loads(self.reasons),
+                "quality_type": self.quality.quality_type.type,
             }.items()
         )
 

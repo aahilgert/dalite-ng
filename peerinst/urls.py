@@ -1,8 +1,10 @@
-# Backport of django 1.9 password validation
+from typing import List
+
 from django.conf.urls import include
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import user_passes_test
-from django.urls import path, re_path
+from django.urls import URLPattern, path, re_path
 from django.views.decorators.cache import cache_page
 
 # testing
@@ -118,6 +120,11 @@ def old_patterns():
         path(
             "question-search/", views.question_search, name="question-search",
         ),
+        path(
+            "collection-search/",
+            views.collection_search,
+            name="collection-search",
+        ),
         # Standalone
         path(
             "live/access/<token>/<assignment_hash>",  # noqa
@@ -138,60 +145,6 @@ def old_patterns():
             "live/studentgroupassignment/create/<assignment_id>",
             views.StudentGroupAssignmentCreateView.as_view(),
             name="student-group-assignment-create",
-        ),
-        # Admin
-        path("dashboard/", views.dashboard, name="dashboard"),
-        path(
-            "admin/", admin_views.AdminIndexView.as_view(), name="admin-index",
-        ),
-        path(
-            "admin/peerinst/",
-            include(
-                [
-                    path(
-                        "assignment_results/<assignment_id>/",
-                        include(
-                            [
-                                path(
-                                    "",
-                                    admin_views.AssignmentResultsView.as_view(),  # noqa
-                                    name="assignment-results",
-                                ),
-                                path(
-                                    "rationales/<int:question_id>",
-                                    admin_views.QuestionRationaleView.as_view(),  # noqa
-                                    name="question-rationales",
-                                ),
-                            ]
-                        ),
-                    ),
-                    path(
-                        "question_preview/<int:question_id>",
-                        admin_views.QuestionPreviewView.as_view(),
-                        name="question-preview",
-                    ),
-                    path(
-                        "fake_usernames/",
-                        admin_views.FakeUsernames.as_view(),
-                        name="fake-usernames",
-                    ),
-                    path(
-                        "fake_countries/",
-                        admin_views.FakeCountries.as_view(),
-                        name="fake-countries",
-                    ),
-                    path(
-                        "attribution_analysis/",
-                        admin_views.AttributionAnalysis.as_view(),
-                        name="attribution-analysis",
-                    ),
-                    path(
-                        "group_assignment_management/",
-                        admin_views.StudentGroupAssignmentManagement.as_view(),
-                        name="group-assignment-management",
-                    ),
-                ]
-            ),
         ),
         # Teachers
         path(
@@ -413,6 +366,16 @@ def group_patterns():
             name="group-details-update",
         ),
         path(
+            "group/connect-course",
+            views.connect_group_to_course,
+            name="connect-group-course",
+        ),
+        path(
+            "group/disconnect-course",
+            views.disconnect_group_from_course,
+            name="disconnect-group-course",
+        ),
+        path(
             "group-assignment/<assignment_hash>/",
             views.group_assignment_page,
             name="group-assignment",
@@ -505,6 +468,15 @@ def search_patterns():
             views.search_categories,
             name="search-categories",
         ),
+        path(
+            "search/username", views.search_usernames, name="search-usernames",
+        ),
+        path("search/subject", views.search_subjects, name="search-subjects",),
+        path(
+            "search/discipline",
+            views.search_disciplines,
+            name="search-disciplines",
+        ),
     ]
 
 
@@ -571,6 +543,11 @@ def researcher_patterns():
 
 def collection_patterns():
     return [
+        path(
+            "collection-paginate/",
+            views.collection_paginate,
+            name="collection-paginate",
+        ),
         path(
             "collection/create/",
             views.CollectionCreateView.as_view(),
@@ -745,7 +722,140 @@ def question_patterns():
     ]
 
 
-urlpatterns = sum(
+def dev_admin_patterns() -> List[URLPattern]:
+    return [
+        path("admin/", views.admin_.index, name="index"),
+        path(
+            "admin/dev",
+            include(
+                [
+                    path(
+                        "",
+                        admin_views.AdminIndexView.as_view(),
+                        name="admin-index",
+                    ),
+                    path(
+                        "peerinst/",
+                        include(
+                            [
+                                path(
+                                    "assignment_results/<assignment_id>/",
+                                    include(
+                                        [
+                                            path(
+                                                "",
+                                                admin_views.AssignmentResultsView.as_view(),  # noqa
+                                                name="assignment-results",
+                                            ),
+                                            path(
+                                                "rationales/<int:question_id>",
+                                                admin_views.QuestionRationaleView.as_view(),  # noqa
+                                                name="question-rationales",
+                                            ),
+                                        ]
+                                    ),
+                                ),
+                                path(
+                                    "question_preview/<int:question_id>",
+                                    admin_views.QuestionPreviewView.as_view(),
+                                    name="question-preview",
+                                ),
+                                path(
+                                    "fake_usernames/",
+                                    admin_views.FakeUsernames.as_view(),
+                                    name="fake-usernames",
+                                ),
+                                path(
+                                    "fake_countries/",
+                                    admin_views.FakeCountries.as_view(),
+                                    name="fake-countries",
+                                ),
+                                path(
+                                    "attribution_analysis/",
+                                    admin_views.AttributionAnalysis.as_view(),
+                                    name="attribution-analysis",
+                                ),
+                                path(
+                                    "group_assignment_management/",
+                                    admin_views.StudentGroupAssignmentManagement.as_view(),  # noqa
+                                    name="group-assignment-management",
+                                ),
+                            ]
+                        ),
+                    ),
+                ]
+            ),
+        ),
+    ]
+
+
+def saltise_admin_patterns() -> List[URLPattern]:
+    return [
+        path(
+            "admin/saltise/",
+            include(
+                (
+                    [
+                        path(
+                            "",
+                            staff_member_required(views.admin_.saltise_index),
+                            name="index",
+                        ),
+                        path(
+                            "group-assignment-management/",
+                            staff_member_required(
+                                admin_views.StudentGroupAssignmentManagement.as_view()  # noqa
+                            ),
+                            name="group-assignment-management",
+                        ),
+                        path(
+                            "new-user-approval",
+                            staff_member_required(
+                                views.admin_.new_user_approval_page
+                            ),
+                            name="new-user-approval",
+                        ),
+                        path(
+                            "verify-user",
+                            staff_member_required(views.admin_.verify_user),
+                            name="verify-user",
+                        ),
+                        path(
+                            "flagged-rationales",
+                            staff_member_required(
+                                views.admin_.flagged_rationales_page
+                            ),
+                            name="flagged-rationales",
+                        ),
+                        path(
+                            "get-flagged-rationales",
+                            staff_member_required(
+                                views.admin_.get_flagged_rationales
+                            ),
+                            name="get-flagged-rationales",
+                        ),
+                        path(
+                            "activity",
+                            staff_member_required(views.admin_.activity_page),
+                            name="activity",
+                        ),
+                        path(
+                            "get-groups-activity",
+                            staff_member_required(
+                                views.admin_.get_groups_activity
+                            ),
+                            name="get-groups-activity",
+                        ),
+                    ],
+                    "saltise-admin",
+                ),
+                namespace="saltise-admin",
+            ),
+        )
+    ]
+
+
+urlpatterns: List[URLPattern] = sum(
     [
         collection_patterns(),
         group_patterns(),
@@ -755,6 +865,8 @@ urlpatterns = sum(
         search_patterns(),
         student_patterns(),
         teacher_patterns(),
+        dev_admin_patterns(),
+        saltise_admin_patterns(),
     ],
     [],
 )

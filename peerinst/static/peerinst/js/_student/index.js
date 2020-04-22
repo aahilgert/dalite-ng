@@ -22,6 +22,7 @@ function initModel(data) {
       },
     },
     groups: data.groups.map(group => ({
+      connectedCourseUrl: group.connected_course_url,
       name: group.name,
       title: group.title,
       notifications: group.notifications,
@@ -53,6 +54,7 @@ function initModel(data) {
       assignmentExpired: data.translations.assignment_expired,
       cancel: data.translations.cancel,
       completed: data.translations.completed,
+      courseFlowButton: data.translations.course_flow_button,
       day: data.translations.day,
       days: data.translations.days,
       dueOn: data.translations.due_on,
@@ -402,6 +404,23 @@ function groupTitleView(group) {
   const icons = document.createElement("div");
   icons.classList.add("student-group--icons");
   div.appendChild(icons);
+
+  if (group.connectedCourseUrl) {
+    const courseButtonContainer = document.createElement("div");
+    courseButtonContainer.classList.add("student-group--course");
+    icons.appendChild(courseButtonContainer);
+
+    const courseButton = document.createElement("i");
+    courseButton.classList.add("material-icons", "md-28");
+    courseButton.title = model.translations.courseFlowButton;
+    courseButton.addEventListener(
+      "click",
+      () => (window.location.href = group.connectedCourseUrl),
+    );
+    courseButton.classList.add("course-flow-button");
+    courseButton.textContent = "calendar_today";
+    courseButtonContainer.appendChild(courseButton);
+  }
 
   const notifications = document.createElement("div");
   notifications.classList.add("student-group--notifications");

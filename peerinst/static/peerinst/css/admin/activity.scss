@@ -1,0 +1,46 @@
+@import "../variables";
+
+#discipline-activity {
+  display: grid;
+  grid-gap: 25px;
+  justify-content: center;
+
+  & #discipline-activity__disciplines {
+    background: $mdc-theme-primary;
+    border: none;
+    border-radius: 25px;
+    box-shadow: none;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1.2rem;
+    height: 40px;
+    justify-self: center;
+    min-width: 50px;
+    text-align: center;
+    width: max-content;
+
+    &:-moz-focusring {
+      color: transparent;
+      text-shadow: 0 0 0 #ffffff;
+
+      & * {
+        color: #ffffff;
+        text-shadow: none;
+      }
+    }
+  }
+
+  .dataTables_wrapper {
+    font-size: smaller;
+  }
+  .dt-button {
+    font-family: inherit;
+  }
+  .small {
+    font-size: smaller;
+  }
+  ul {
+    padding-left:0px;
+  }
+
+}

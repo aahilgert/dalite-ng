@@ -339,12 +339,17 @@ def student_list_from_student_groups(group_list):
     return student_ids
 
 
-def question_search_function(search_string, pre_filtered_list=None):
+def question_search_function(
+    search_string, pre_filtered_list=None, is_old_query=False
+):
     """
     Given a search_string and an optional queryset to search within, return
     a queryset of question objects that have that search_string in either
     the question id, text, title, category, discipline, answerchoice,
     or username.
+    """
+    """
+    is_old_query is True when query is sent from assignment or blink view
     """
     from peerinst.models import Question
 
@@ -354,19 +359,39 @@ def question_search_function(search_string, pre_filtered_list=None):
     search_list = (
         pre_filtered_list if pre_filtered_list else Question.objects.all()
     )
-    query_result = (
-        search_list.filter(
-            Q(id__icontains=search_string)
-            | Q(text__icontains=search_string)
-            | Q(title__icontains=search_string)
-            | Q(category__title__icontains=search_string)
-            | Q(discipline__title__icontains=search_string)
-            | Q(answerchoice__text__icontains=search_string)
-            | Q(user__username__icontains=search_string)
+    if is_old_query:
+        query_result = (
+            search_list.filter(
+                Q(id__icontains=search_string)
+                | Q(text__icontains=search_string)
+                | Q(title__icontains=search_string)
+                | Q(category__title__icontains=search_string)
+                | Q(discipline__title__icontains=search_string)
+                | Q(answerchoice__text__icontains=search_string)
+                | Q(user__username__icontains=search_string)
+            )
+            .annotate(answer_count=Count("answer", distinct=True))
+            .order_by("-answer_count")
         )
-        .annotate(answer_count=Count("answer", distinct=True))
-        .order_by("-answer_count")
-    )
+    elif search_string.isdigit():
+        query_result = (
+            search_list.filter(
+                Q(text__icontains=search_string)
+                | Q(title__icontains=search_string)
+                | Q(pk=int(search_string))
+            )
+            .annotate(answer_count=Count("answer", distinct=True))
+            .order_by("-answer_count")
+        )
+    else:
+        query_result = (
+            search_list.filter(
+                Q(text__icontains=search_string)
+                | Q(title__icontains=search_string)
+            )
+            .annotate(answer_count=Count("answer", distinct=True))
+            .order_by("-answer_count")
+        )
 
     return query_result
 

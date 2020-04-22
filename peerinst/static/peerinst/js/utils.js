@@ -75,3 +75,14 @@ export function showAlert(msg: string) {
   ok.textContent = "Ok";
   box.appendChild(ok);
 }
+
+export function createElement(tag, text = "", attributes = {}) {
+  const elem = document.createElement(tag);
+  if (text) {
+    elem.textContent = text;
+  }
+  Object.entries(attributes).forEach(([key, val]) => {
+    elem.setAttribute(key, val);
+  });
+  return elem;
+}

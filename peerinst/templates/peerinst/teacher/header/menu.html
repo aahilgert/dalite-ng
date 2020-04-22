@@ -68,6 +68,13 @@
         {% trans 'Forums' %}
       </a>
       {% endif %}
+      <a class="mdc-list-item" href="{% url 'course_flow:home' %}">
+        <i class="material-icons mdc-list-item__graphic mdc-theme--primary"
+          aria-hidden="true">
+          directions
+        </i>
+        CourseFlow
+      </a>
       <a class="mdc-list-item" href="{% url 'logout' %}">
         <i class="material-icons mdc-list-item__graphic mdc-theme--primary"
           aria-hidden="true">

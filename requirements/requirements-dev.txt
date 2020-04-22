@@ -4,124 +4,129 @@
 #
 #    pip-compile requirements/requirements-dev.in
 #
--e git+https://github.com/SALTISES4/django-cookies-samesite#egg=django_cookies_samesite  # via -r requirements/requirements.txt
--e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider  # via -r requirements/requirements.txt
--e git+https://github.com/edx/opaque-keys#egg=opaque-keys  # via -r requirements/requirements.txt
+-e git+https://github.com/SALTISES4/CourseFlow#egg=CourseFlow  # via -r requirements/requirements-base.txt
+-e git+https://github.com/aahilgert/UserFeedback@master#egg=user_feedback  # via -r requirements/requirements-base.txt
+-e git+https://github.com/SALTISES4/django-cookies-samesite#egg=django_cookies_samesite  # via -r requirements/requirements-base.txt
+-e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider  # via -r requirements/requirements-base.txt
+-e git+https://github.com/edx/opaque-keys#egg=opaque-keys  # via -r requirements/requirements-base.txt
 -e git+https://github.com/jsumnerPhD/http-observatory#egg=httpobs  # via -r requirements/requirements-dev.in
--e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums  # via -r requirements/requirements.txt
-amqp==2.5.2               # via kombu
+-e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums  # via -r requirements/requirements-base.txt
+amqp==2.5.2               # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, kombu
 appdirs==1.4.3            # via black, virtualenv
-attrs==19.3.0             # via black, pytest
+attrs==19.3.0             # via -r requirements/requirements-test.txt, black, pytest
 backcall==0.1.0           # via ipython
 bandit==1.6.2             # via -r requirements/requirements-dev.in
-beautifulsoup4==4.8.2     # via django-htmlmin, httpobs
-billiard==3.6.3.0         # via celery
+beautifulsoup4==4.8.2     # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-htmlmin, httpobs
+billiard==3.6.3.0         # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, celery
 black==19.10b0            # via -r requirements/requirements-dev.in
-bleach==3.1.1             # via -r requirements/requirements.txt
-celery[redis]==4.4.0      # via -r requirements/requirements.txt, django-celery-beat, httpobs
-certifi==2019.11.28       # via requests
+bleach==3.1.4             # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+celery[redis]==4.4.0      # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-celery-beat, httpobs
+certifi==2019.11.28       # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, requests
 cfgv==3.1.0               # via pre-commit
-chardet==3.0.4            # via requests
+chardet==3.0.4            # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, requests
 click==7.0                # via black, safety
-coverage==5.0.3           # via -r requirements/test-requirements.txt, pytest-cov
-ddt==1.2.2                # via -r requirements/test-requirements.txt
+coverage==5.0.3           # via -r requirements/requirements-test.txt, pytest-cov
+ddt==1.2.2                # via -r requirements/requirements-test.txt
 decorator==4.4.2          # via ipython, traitlets
 distlib==0.3.0            # via virtualenv
-django-analytical==2.5.0  # via -r requirements/requirements.txt
-django-appconf==1.0.3     # via django-compressor, pinax-forums
-django-celery-beat==2.0.0  # via -r requirements/requirements.txt
-django-classy-tags==1.0.0  # via django-cookie-law
-django-compressor==2.4    # via -r requirements/requirements.txt
-django-cookie-law==2.0.3  # via -r requirements/requirements.txt
-django-cookies-samesite-fork==0.2.1  # via django-security-headers
-django-csp==3.6           # via django-security-headers
-django-grappelli==2.14.1  # via -r requirements/requirements.txt
-django-htmlmin==0.11.0    # via -r requirements/requirements.txt
-django-security-headers==0.3.1  # via -r requirements/requirements.txt
-django-sslserver==0.22    # via -r requirements/requirements-dev.in, django-security-headers
-django-timezone-field==4.0  # via django-celery-beat
-django==2.2.10            # via -r requirements/requirements.txt, django-analytical, django-appconf, django-celery-beat, django-classy-tags, django-cookie-law, django-csp, django-lti-tool-provider, django-security-headers, django-sslserver, django-timezone-field, jsonfield, pinax-forums
+django-analytical==2.5.0  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+django-appconf==1.0.3     # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-compressor, pinax-forums
+django-celery-beat==2.0.0  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+django-classy-tags==1.0.0  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-cookie-law
+django-compressor==2.4    # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+django-cookie-law==2.0.3  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+django-cookies-samesite-fork==0.2.1  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-security-headers
+django-csp==3.6           # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-security-headers
+django-grappelli==2.14.1  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+django-htmlmin==0.11.0    # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+django-security-headers==0.3.1  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+django-sslserver==0.22    # via -r requirements/requirements-base.txt, -r requirements/requirements-dev.in, -r requirements/requirements-test.txt, django-security-headers
+django-timezone-field==4.0  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-celery-beat
+django==2.2.11            # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-analytical, django-appconf, django-celery-beat, django-classy-tags, django-cookie-law, django-csp, django-lti-tool-provider, django-security-headers, django-sslserver, django-timezone-field, djangorestframework, jsonfield, pinax-forums
+djangorestframework==3.11.0  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
 dparse==0.4.1             # via safety
 entrypoints==0.3          # via flake8
-factory_boy==2.6          # via -r requirements/test-requirements.txt
-fake-factory==9999.9.9    # via factory-boy
-faker==0.9.1              # via -r requirements/test-requirements.txt, mixer
+factory_boy==2.6          # via -r requirements/requirements-test.txt
+fake-factory==9999.9.9    # via -r requirements/requirements-test.txt, factory-boy
+faker==4.0.2             # via -r requirements/requirements-test.txt, mixer
 filelock==3.0.12          # via virtualenv
-filetype==1.0.5           # via pinax-forums
+filetype==1.0.5           # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, pinax-forums
 flake8==3.7.9             # via -r requirements/requirements-dev.in
 gitdb==4.0.2              # via gitpython
 gitpython==3.1.0          # via bandit
-html5lib==1.0.1           # via django-htmlmin
+html5lib==1.0.1           # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-htmlmin
 identify==1.4.11          # via pre-commit
-idna==2.9                 # via requests
-importlib-metadata==1.5.0  # via kombu, pluggy, pre-commit, pytest, virtualenv
+idna==2.9                 # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, requests
+importlib-metadata==1.5.0  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, kombu, pluggy, pre-commit, pytest, virtualenv
 ipython-genutils==0.2.0   # via traitlets
 ipython==7.13.0           # via -r requirements/requirements-dev.in
 jedi==0.16.0              # via ipython
-jsonfield==3.1.0          # via django-lti-tool-provider
-kombu==4.6.7              # via celery
-lti==0.9.4                # via django-lti-tool-provider
-lxml==4.5.0               # via lti
+jsonfield==3.1.0          # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-lti-tool-provider
+kombu==4.6.7              # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, celery
+lti==0.9.4                # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-lti-tool-provider
+lxml==4.5.0               # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, lti
 mccabe==0.6.1             # via flake8
-mixer==6.1.3              # via -r requirements/test-requirements.txt
-mock==4.0.1               # via -r requirements/test-requirements.txt
-more-itertools==8.2.0     # via pytest
-mysqlclient==1.4.6        # via -r requirements/requirements.txt
+mixer==6.1.3              # via -r requirements/requirements-test.txt
+mock==4.0.1               # via -r requirements/requirements-test.txt
+more-itertools==8.2.0     # via -r requirements/requirements-test.txt, pytest
+mysqlclient==1.4.6        # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
 nodeenv==1.3.5            # via pre-commit
-oauthlib==3.1.0           # via django-lti-tool-provider, lti, requests-oauthlib
-packaging==20.1           # via -r requirements/requirements.txt, dparse, pytest, safety
+numpy==1.18.1             # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, pandas
+oauthlib==3.1.0           # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-lti-tool-provider, lti, requests-oauthlib
+packaging==20.1           # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, dparse, pytest, safety
+pandas==1.0.2             # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
 parso==0.6.2              # via jedi
 pathspec==0.7.0           # via black
-pbr==5.4.4                # via stevedore
+pbr==5.4.4                # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, stevedore
 pexpect==4.8.0            # via ipython
 pickleshare==0.7.5        # via ipython
-pillow==7.0.0             # via -r requirements/requirements.txt
-pluggy==0.13.1            # via pytest
+pillow==7.0.0             # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+pluggy==0.13.1            # via -r requirements/requirements-test.txt, pytest
 pre-commit==2.1.1         # via -r requirements/requirements-dev.in
 prompt-toolkit==3.0.3     # via ipython
 ptyprocess==0.6.0         # via pexpect
 publicsuffixlist==0.6.12  # via httpobs
-py==1.8.1                 # via pytest
+py==1.8.1                 # via -r requirements/requirements-test.txt, pytest
 pycodestyle==2.5.0        # via flake8
 pyflakes==2.1.1           # via flake8
 pygments==2.5.2           # via ipython
-pyjwt==1.7.1              # via -r requirements/requirements.txt
-pymongo==3.10.1           # via edx-opaque-keys
-pyparsing==2.4.6          # via packaging
-pytest-cov==2.8.1         # via -r requirements/requirements-dev.in, -r requirements/test-requirements.txt
-pytest-django==3.8.0      # via -r requirements/requirements-dev.in, -r requirements/test-requirements.txt
+pyjwt==1.7.1              # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+pymongo==3.10.1           # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, edx-opaque-keys
+pyparsing==2.4.6          # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, packaging
+pytest-cov==2.8.1         # via -r requirements/requirements-dev.in, -r requirements/requirements-test.txt
+pytest-django==3.8.0      # via -r requirements/requirements-dev.in, -r requirements/requirements-test.txt
 pytest-mock==2.0.0        # via -r requirements/requirements-dev.in
 pytest-rerunfailures==8.0  # via -r requirements/requirements-dev.in
-pytest-runner==5.2        # via django-cookie-law
-pytest==5.3.5             # via -r requirements/requirements-dev.in, -r requirements/test-requirements.txt, pytest-cov, pytest-django, pytest-mock, pytest-rerunfailures
-python-crontab==2.4.0     # via django-celery-beat
-python-dateutil==2.8.1    # via faker, python-crontab
-python-memcached==1.59    # via -r requirements/requirements.txt
-pytz==2019.3              # via -r requirements/requirements.txt, -r requirements/test-requirements.txt, celery, django, django-timezone-field
-pyyaml==5.3               # via -r requirements/test-requirements.txt, bandit, dparse, pre-commit
-rcssmin==1.0.6            # via django-compressor
-redis==3.4.1              # via celery
+pytest-runner==5.2        # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-cookie-law
+pytest==5.3.5             # via -r requirements/requirements-dev.in, -r requirements/requirements-test.txt, pytest-cov, pytest-django, pytest-mock, pytest-rerunfailures
+python-crontab==2.4.0     # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-celery-beat
+python-dateutil==2.8.1    # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, faker, pandas, python-crontab
+python-memcached==1.59    # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+pytz==2019.3              # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, celery, django, django-timezone-field, pandas
+pyyaml==5.3.1             # via -r requirements/requirements-test.txt, bandit, dparse, pre-commit
+rcssmin==1.0.6            # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-compressor
+redis==3.4.1              # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, celery
 regex==2020.2.20          # via black
-requests-oauthlib==1.3.0  # via lti
-requests==2.23.0          # via -r requirements/requirements.txt, httpobs, requests-oauthlib, safety
-rjsmin==1.1.0             # via django-compressor
+requests-oauthlib==1.3.0  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, lti
+requests==2.23.0          # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, httpobs, requests-oauthlib, safety
+rjsmin==1.1.0             # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django-compressor
 safety==1.8.5             # via -r requirements/requirements-dev.in
-selenium==3.13.0          # via -r requirements/test-requirements.txt
-six==1.14.0               # via bandit, bleach, django-appconf, django-classy-tags, django-compressor, django-grappelli, django-lti-tool-provider, dparse, edx-opaque-keys, faker, html5lib, packaging, python-dateutil, python-memcached, stevedore, traitlets, virtualenv
+selenium==3.13.0          # via -r requirements/requirements-test.txt
+six==1.14.0               # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, bandit, bleach, django-appconf, django-classy-tags, django-compressor, django-grappelli, django-lti-tool-provider, dparse, edx-opaque-keys, faker, html5lib, packaging, python-dateutil, python-memcached, stevedore, traitlets, virtualenv
 smmap==3.0.1              # via gitdb
-soupsieve==2.0            # via beautifulsoup4
-sqlparse==0.3.1           # via django
-stevedore==1.32.0         # via bandit, edx-opaque-keys
-text-unidecode==1.2       # via faker
+soupsieve==2.0            # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, beautifulsoup4
+sqlparse==0.3.1           # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, django
+stevedore==1.32.0         # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, bandit, edx-opaque-keys
+text-unidecode==1.3       # via -r requirements/requirements-test.txt, faker
 toml==0.10.0              # via black, pre-commit
 traitlets==4.3.3          # via ipython
 typed-ast==1.4.1          # via black
-urllib3==1.25.8           # via requests
-vine==1.3.0               # via amqp, celery
+urllib3==1.25.8           # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, requests
+vine==1.3.0               # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, amqp, celery
 virtualenv==20.0.7        # via pre-commit
-wcwidth==0.1.8            # via prompt-toolkit, pytest
-webencodings==0.5.1       # via bleach, html5lib
-zipp==3.0.0               # via importlib-metadata
+wcwidth==0.1.8            # via -r requirements/requirements-test.txt, prompt-toolkit, pytest
+webencodings==0.5.1       # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, bleach, html5lib
+zipp==3.0.0               # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

@@ -20,6 +20,7 @@ __all__ = [
     "inactive_user",
     "new_teacher",
     "new_user",
+    "new_user_requests",
     "question",
     "questions",
     "staff",
@@ -30,6 +31,7 @@ __all__ = [
     "student_group_assignments",
     "student_new",
     "students",
+    "superuser",
     "teacher",
     "teachers",
     "thread",
@@ -37,6 +39,7 @@ __all__ = [
     "tos_student",
     "tos_teacher",
     "user",
+    "users",
 ]
 
 
@@ -74,4 +77,14 @@ from .student import (
 )
 from .teacher import teacher, teachers
 from .tos import tos_student, tos_teacher
-from .user import admin, inactive_user, new_teacher, new_user, staff, user
+from .user import (
+    admin,
+    inactive_user,
+    new_teacher,
+    new_user,
+    new_user_requests,
+    staff,
+    superuser,
+    user,
+    users,
+)

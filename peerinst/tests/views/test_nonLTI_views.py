@@ -3,17 +3,10 @@ from datetime import datetime
 import pytz
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group, Permission, User
-from django.core import mail
-from django.urls import reverse
 from django.test import TestCase, TransactionTestCase
+from django.urls import reverse
 
-from peerinst.models import (
-    Assignment,
-    Collection,
-    Discipline,
-    Question,
-    Teacher,
-)
+from peerinst.models import Assignment, Collection, Discipline, Question
 from quality.models import UsesCriterion
 from tos.models import Consent, Role, Tos
 
@@ -96,47 +89,6 @@ class SignUpTest(TestCase):
             )
         self.assertEqual(response.status_code, 503)
         self.assertTemplateUsed(response, "503.html")
-
-
-class AdminTest(TestCase):
-    fixtures = ["test_users.yaml"]
-
-    def setUp(self):
-        self.admin = ready_user(99)
-
-    def test_dashboard(self):
-        logged_in = self.client.login(
-            username=self.admin.username, password=self.admin.text_pwd
-        )
-        self.assertTrue(logged_in)
-
-        response = self.client.get(reverse("dashboard"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "peerinst/dashboard.html")
-
-        response = self.client.post(reverse("dashboard"), {"user": 3})
-        self.assertTrue(User.objects.get(pk=3).is_active)
-        self.assertRaises(
-            Teacher.DoesNotExist, Teacher.objects.get, user__pk=3
-        )
-
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(
-            mail.outbox[0].subject, "Please verify your myDalite account"
-        )
-
-        inactive_user = User.objects.get(pk=3)
-        inactive_user.is_active = False
-        inactive_user.save()
-
-        with self.settings(EMAIL_BACKEND="", DEBUG=True):
-            response = self.client.post(
-                reverse("dashboard"), {"user": 3, "is_teacher": "on"}
-            )
-            self.assertTrue(User.objects.get(pk=3).is_active)
-            self.assertTrue(Teacher.objects.get(user__pk=3))
-            self.assertEqual(response.status_code, 503)
-            self.assertTemplateUsed(response, "503.html")
 
 
 class TeacherTest(TestCase):

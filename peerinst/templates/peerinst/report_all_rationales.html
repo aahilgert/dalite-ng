@@ -109,7 +109,6 @@ https://datatables.net/extensions/buttons/examples/styling/jqueryui.html
     </ul>
 
         {% for question in assignment.questions %}
-          {% if question.show %}
             <h4 id="{{ question.title }}" class="mdc-typography--title bold">{% trans 'Question' %}: {{ question.title|safe }}</h4>
             <div class="admin-link">
                 <a href="#question_gradebook">{% trans 'Back to top' %}</a>
@@ -288,7 +287,6 @@ https://datatables.net/extensions/buttons/examples/styling/jqueryui.html
                   {% endfor %}
                   </tbody>
               </table>
-            {% endif %}
         {% endfor %}
     {% endfor %}
   </section>
@@ -342,7 +340,7 @@ bundle.selectAll("#second_choice-group-"+id).transition().delay(1000).duration(1
 
     }
   )
-  })
-</script> 
+});
+</script>
 
 {% endblock %}

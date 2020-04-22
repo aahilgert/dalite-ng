@@ -1,12 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-
-class UserType(models.Model):
-    type = models.CharField(max_length=32)
-
-    def __str__(self):
-        return self.type
+from .admin import UserType
 
 
 class SaltiseMember(models.Model):

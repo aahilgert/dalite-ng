@@ -17,9 +17,11 @@ requests
 django-security-headers>=0.3
 packaging
 djangorestframework
+pandas
 
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys
 -e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums
 -e git+https://github.com/SALTISES4/django-cookies-samesite#egg=django_cookies_samesite
+-e git+https://github.com/SALTISES4/CourseFlow#egg=CourseFlow
 -e git+https://github.com/aahilgert/UserFeedback@master#egg=user_feedback

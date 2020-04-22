@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 
+from peerinst.models import NewUserRequest, UserType, UserUrl
+
 
 def new_users(n):
     def generator():
@@ -17,4 +19,20 @@ def new_users(n):
 
 
 def add_users(users):
-    return [User.objects.create_user(**u) for u in users]
+    users_ = [User.objects.create_user(**u) for u in users]
+    for user in users_:
+        if not hasattr(user, "url"):
+            UserUrl.objects.create(user=user, url="test.com")
+    return users_
+
+
+def add_user_requests(users):
+    for user in users:
+        user.is_active = False
+        user.save()
+    return [
+        NewUserRequest.objects.create(
+            user=user, type=UserType.objects.get(type="teacher")
+        )
+        for user in users
+    ]
