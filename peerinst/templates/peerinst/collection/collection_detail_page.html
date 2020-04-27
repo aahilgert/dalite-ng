@@ -143,6 +143,31 @@
                       ref_id="{{ question.id|safe }}" class="material-icons md-24{% if not question.answer_set.all.count == 0 %} analytics-tags{% endif %}">info</i>
                       <span id="rating-{{ question.id|safe }}"></span>
                     </div>
+                    <div class="flag-question" data-id="{{ question.pk }}">
+                      <i class="mdc-icon-toggle material-icons mdc-theme--primary flag-question__btn"
+                         role="button"
+                         aria-pressed="false"
+                         aria-label="{% trans 'Flag question' %}"
+                         tabindex="0"
+                         title="{% trans 'Flag question' %}">
+                         outlined_flag
+                      </i>
+                      <div class="flag-question__form" hidden>
+                        <h3>{% trans 'Flag question' %}</h3>
+                        <form>
+                          <select class="flag-question__form__select"
+                                  title="{% trans 'Possible reasons' %}"
+                                  aria-label="{% trans 'Possible reasons' %}">
+                          </select>
+                          <input type="submit"
+                                 class="mdc-button mdc-button--raised"
+                                 value="{% trans 'Flag' %}">
+                        </form>
+                        <svg class="icon flag-question__close">
+                          <use xlink:href="#close"></use>
+                        </svg>
+                      </div>
+                    </div>
                     <i class="mdc-icon-toggle material-icons mdc-theme--primary favourite-btn"
                         role="button"
                         aria-pressed="false"
@@ -175,7 +200,7 @@
                       {{ question.title }}
                     </h2>
                   </header>
-                  <section id="description-{{ question.pk }}" class="mdc-dialog__body mdc-dialog__body--scrollable">
+                  <section id="description-{{ question.id }}" class="mdc-dialog__body mdc-dialog__body--scrollable">
                     <h2 id="label" class="mdc-dialog__header__title">
                       {% trans 'Analytics' %}
                     </h2>
@@ -187,12 +212,22 @@
                     <h2 id="label" class="mdc-dialog__header__title">
                       {% trans 'Rationales' %}
                     </h2>
+                    <div class='field-container'>
+                      <div class='number-box'><span class='number'>?</span></div>
+                      <div class='field'>
+                        <p class="dialog-help-text"><small>
+                          {% blocktrans %}
+                          The following rationales consist of the most popular, while the preceding fraction indicates, of those that have viewed the rationale, how many have chosen it.
+                          {% endblocktrans %}
+                        </small></p>
+                      </div>
+                    </div>
                     <ul>
                       {% for answer_choice in question.get_most_convincing_rationales %}
                         <li id="{{ question.id }}" name="rationale" class="items-for-question">{{ answer_choice.Answer }}. {{ answer_choice.answer_text|safe|striptags }}</li>
                         <ul>
                           {% for rationale in answer_choice.most_convincing %}
-                              <li id="{{ question.id }}" data-id="{{ rationale.id }}" name="rationale" class="items-for-question">({{ rationale.times_chosen }}/{{ rationale.times_shown }}) {{ rationale.rationale|safe|striptags }}</li>
+                              <li id="{{ question.id }}" data-id="{{ rationale.id }}" name="rationale" class="items-for-question"><span class="rationale-stats">({{ rationale.times_chosen }}/{{ rationale.times_shown }})</span> {{ rationale.rationale|safe|striptags }}</li>
                           {% endfor %}
                         </ul>
 
@@ -202,7 +237,7 @@
                       {% trans 'Assignments using ' %}{{ question.title }}
                     </h2>
                     {% for assignment in question.assignment_set.all %}
-                      <p id="{{ question.id }}" name="assignment" class="items-for-question"><a href="{% url 'question-list' assignment_id=assignment.pk %}">{{ assignment.title }}</a></p>
+                      <p id="{{ question.id }}" name="assignment" class="items-for-question"><a class="assignment-link" href="{% url 'question-list' assignment_id=assignment.pk %}">{{ assignment.title }}</a></p>
                     {% endfor %}
                   </section>
                   <footer class="mdc-dialog__footer">

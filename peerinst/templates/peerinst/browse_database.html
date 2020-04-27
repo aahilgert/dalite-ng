@@ -11,57 +11,6 @@
 <link href="{% static 'peerinst/css/question.min.css' %}" rel="stylesheet">
 {% endcompress %}
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<style nonce="{{ request.csp_nonce }}">
-  #category-filters {
-    margin-top: 10px;
-  }
-  .hidden-mdc-component {
-    display: none;
-  }
-  .toggle-text {
-    color: #54c0db;
-    cursor: pointer;
-    font-weight: 400;
-    left: 50%;
-    margin: 0;
-    margin-right: -50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-  #querytype-container {
-    height: 80px;
-  }
-  #question-toggle-button{
-    border-top-left-radius: 35px;
-    border-bottom-left-radius: 35px;
-  }
-  #collection-toggle-button{
-    border-top-right-radius: 35px;
-    border-bottom-right-radius: 35px;
-    float: right;
-  }
-  .mdc-chip__icon.mdc-chip__icon--trailing {
-    pointer-events: none;
-  }
-  .toggle-button{
-    box-shadow: inset 0px 0px 0px 1px #54c0db;
-    display: inline-block;
-    top: 50%;
-    transform: translateY(-50%);
-    position: relative;
-    cursor: pointer;
-    height: 60%;
-    width: 50%;
-  }
-  .selected.toggle-button{
-    background-color: #54c0db;
-  }
-  .selected.toggle-text{
-    color: white;
-  }
-
-</style>
 {% endblock %}
 
 {% block body %}
@@ -88,7 +37,7 @@
       <div class='field'>
         <p><small>
           {% blocktrans %}
-          Explore the myDalite database using a keyword search.  You will be able to refine your search results using filters on discipline and category.
+          Explore the myDalite database using a keyword search.  You will be able to refine your search results using filters.
           {% endblocktrans %}
         </small></p>
       </div>
@@ -123,7 +72,7 @@
           </div>
         </div>
         <p class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent" aria-hidden="true">
-          {% trans 'Filter by Author.' %}
+          {% trans 'Filter by Author or Collaborator.' %}
         </p>
 
         <div id='current_usernames' class='mdc-chip-set mdc-chip-set--input' data-mdc-auto-init='MDCChipSet'>
@@ -151,7 +100,7 @@
           </div>
         </div>
         <p class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent" aria-hidden="true">
-          {% trans 'Filter by Discipline.' %}
+          {% trans 'Filter by Discipline. (e.g. Physics)' %}
         </p>
 
         <div id='current_disciplines' class='mdc-chip-set mdc-chip-set--input' data-mdc-auto-init='MDCChipSet'>
@@ -179,7 +128,7 @@
           </div>
         </div>
         <p class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent" aria-hidden="true">
-          {% trans 'Filter by Subject.' %}
+          {% trans 'Filter by Subject. (e.g. Mechanics)' %}
         </p>
 
         <div id='current_subjects' class='mdc-chip-set mdc-chip-set--input' data-mdc-auto-init='MDCChipSet'>
@@ -207,7 +156,7 @@
           </div>
         </div>
         <p class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent" aria-hidden="true">
-          {% trans 'Filter by Category.' %}
+          {% trans 'Filter by Category. (e.g. Dynamics)' %}
         </p>
         <div id='current_categories' class='mdc-chip-set mdc-chip-set--input' data-mdc-auto-init='MDCChipSet'>
         </div>
@@ -230,8 +179,16 @@
         <div class="mdc-notched-outline__idle"></div>
       </div>
       <p class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent" aria-hidden="true">
-        {% trans 'The search engine checks titles and descriptions for each keyword as well as the complete phrase.' %}
+        {% trans 'The search engine checks titles and descriptions for each term and for the complete search phrase.' %}
       </p>
+    </div>
+
+    <div id="search-button-container">
+      <div id="search-button">
+        <p id="search-button-text">
+          {% trans 'Search' %}
+        </p>
+      </div>
     </div>
 
     <div class="mdc-form-field" id="toggle-images-field">
@@ -272,7 +229,7 @@
       <div id="select-filters">
         <div id="discipline-filters" class="display-none"><div>{% trans 'Disciplines: ' %}</div><span id="filter-on-discipline"></span></div>
 
-        <div id="category-filters" class="display-none"><div>{% trans 'Keywords: ' %}</div><span id="filter-on-category"></span></div>
+        <div id="category-filters" class="display-none"><div>{% trans 'Categories: ' %}</div><span id="filter-on-category"></span></div>
 
         <button id="reset-filters" type="button" class='mdc-button mdc-button--raised padded-top' disabled=true'>{% trans 'Clear' %}</button>
       </div>
@@ -288,6 +245,9 @@
 {{ block.super }}
 {% compress js %}
 <script src="{% static 'peerinst/js/search.min.js' %}"></script>
+{% endcompress %}
+{% compress js %}
+<script src="{% static 'peerinst/js/teacher.min.js' %}"></script>
 {% endcompress %}
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://unpkg.com/json5@2.1.1/dist/index.min.js" integrity="sha384-gRrJKgBpstjyexh9UmCoTPivgMMb7/EAtEdR5DLbVhiPYdl03QxdzMzbylHUSloD" crossorigin="anonymous"></script>
@@ -376,34 +336,38 @@
   }
 
   const input = document.getElementById('search-bar');
-  input.onchange = async function() {
-    if (input.value != "") {
+
+  let searchedValue = null;
+
+  function query() {
+      searchedValue = input.value;
       let authors = [];
       let disciplines = [];
       let subjects = [];
       let categories = [];
       Array.from(document.getElementsByClassName("category")).forEach((item, i) => {
-        categories.push(item.getAttribute("d").replace(" ","%20"));
+        categories.push(item.getAttribute("d").replace(/ /g,"%20"));
       });
       Array.from(document.getElementsByClassName("username")).forEach((item, i) => {
         authors.push(item.getAttribute("d"));
       });
       Array.from(document.getElementsByClassName("subject")).forEach((item, i) => {
-        subjects.push(item.getAttribute("d").replace(" ","%20"));
+        subjects.push(item.getAttribute("d").replace(/ /g,"%20"));
       });
       Array.from(document.getElementsByClassName("discipline")).forEach((item, i) => {
-        disciplines.push(item.getAttribute("d").replace(" ","%20"));
+        disciplines.push(item.getAttribute("d").replace(/ /g,"%20"));
       });
       search.setupSearch();
-      console.info("Searching: "+input.value);
+      console.info("Searching: "+searchedValue);
       if (isCollectionsSearch) {
-        $('#search_results').load("{% url 'collection-search' %}?author="+authors.join("&author=")+"&discipline="+disciplines.join("&discipline=")+"&subject="+subjects.join("&subject=")+"&category="+categories.join("&category="), "search_string="+input.value, function(response){
+        $('#search_results').load("{% url 'collection-search' %}?author="+authors.join("&author=")+"&discipline="+disciplines.join("&discipline=")+"&subject="+subjects.join("&subject=")+"&category="+categories.join("&category="), "search_string="+searchedValue, function(response){
           processCollectionResponse();
         });
       } else {
-        $('#search_results').load("{% url 'question-search' %}?author="+authors.join("&author=")+"&discipline="+disciplines.join("&discipline=")+"&subject="+subjects.join("&subject=")+"&category="+categories.join("&category="), "search_string="+input.value, function(response){
+        $('#search_results').load("{% url 'question-search' %}?author="+authors.join("&author=")+"&discipline="+disciplines.join("&discipline=")+"&subject="+subjects.join("&subject=")+"&category="+categories.join("&category="), "search_string="+searchedValue, function(response){
           setupAnalytics();
           search.processResponse(response);
+          teacher.initSearchFlag("{% url 'question--flag--reasons' %}", "{% url 'question--flag--flag' %}");
           $(".favourite-btn").each(function(i, el) {
             el.addEventListener("click", function() {
               toggleFavourite(el.getAttribute("data-id"));
@@ -411,7 +375,6 @@
           });
         });
       }
-    }
   }
 
   $.ajaxSetup({
@@ -428,27 +391,28 @@
     let subjects = [];
     let categories = [];
     Array.from(document.getElementsByClassName("category")).forEach((item, i) => {
-      categories.push(item.getAttribute("d").replace(" ","%20"));
+      categories.push(item.getAttribute("d").replace(/ /g,"%20"));
     });
     Array.from(document.getElementsByClassName("username")).forEach((item, i) => {
       authors.push(item.getAttribute("d"));
     });
     Array.from(document.getElementsByClassName("subject")).forEach((item, i) => {
-      subjects.push(item.getAttribute("d").replace(" ","%20"));
+      subjects.push(item.getAttribute("d").replace(/ /g,"%20"));
     });
     Array.from(document.getElementsByClassName("discipline")).forEach((item, i) => {
-      disciplines.push(item.getAttribute("d").replace(" ","%20"));
+      disciplines.push(item.getAttribute("d").replace(/ /g,"%20"));
     });
     search.setupSearch();
-    console.info("Searching: "+input.value);
+    console.info("Searching: "+searchedValue);
     if (isCollectionsSearch) {
-      $('#search_results').load("{% url 'collection-search' %}?page="+page+"&author="+authors.join("&author=")+"&discipline="+disciplines.join("&discipline=")+"&subject="+subjects.join("&subject=")+"&category="+categories.join("&category="), "search_string="+input.value, function(response){
+      $('#search_results').load("{% url 'collection-search' %}?page="+page+"&author="+authors.join("&author=")+"&discipline="+disciplines.join("&discipline=")+"&subject="+subjects.join("&subject=")+"&category="+categories.join("&category="), "search_string="+searchedValue, function(response){
         processCollectionResponse();
       });
     } else {
-      $('#search_results').load("{% url 'question-search' %}?page="+page+"&author="+authors.join("&author=")+"&discipline="+disciplines.join("&discipline=")+"&subject="+subjects.join("&subject=")+"&category="+categories.join("&category="), "search_string="+input.value, function(response){
+      $('#search_results').load("{% url 'question-search' %}?page="+page+"&author="+authors.join("&author=")+"&discipline="+disciplines.join("&discipline=")+"&subject="+subjects.join("&subject=")+"&category="+categories.join("&category="), "search_string="+searchedValue, function(response){
         setupAnalytics();
         search.processResponse(response);
+        teacher.initSearchFlag("{% url 'question--flag--reasons' %}", "{% url 'question--flag--flag' %}");
         $(".favourite-btn").each(function(i, el) {
           el.addEventListener("click", function() {
             toggleFavourite(el.getAttribute("data-id"));
@@ -517,6 +481,12 @@
     document.getElementById("collection-toggle-button").addEventListener("click", () => {
         toggleCollectionQuery();
     });
+    document.getElementById("search-button").addEventListener('click', () => {
+      query();
+    });
+    document.getElementById("reset-filters").addEventListener("click", () => {
+       search.reset();
+     });
   });
 </script>
 {% endblock %}

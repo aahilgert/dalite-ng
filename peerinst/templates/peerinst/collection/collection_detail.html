@@ -7,6 +7,9 @@
 {% compress css %}
 <link href="{% static 'peerinst/css/collection.min.css' %}" rel="stylesheet">
 {% endcompress %}
+{% compress css %}
+<link href="{% static 'peerinst/css/search.min.css' %}" rel="stylesheet">
+{% endcompress %}
 {% endblock %}
 {% block body %}
 <main>
@@ -38,7 +41,7 @@
           </small></p>
           <p><small>
           {% blocktrans %}
-          Your may assign the this collection to one of your student groups by
+          You may assign the this collection to one of your student groups by
           clicking on the assign button below.
           {% endblocktrans %}
         </small></p>
@@ -119,12 +122,25 @@
         </div>
       </div>
     </div>
+    <div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate mdc-linear-progress--closed">
+      <div class="mdc-linear-progress__buffering-dots"></div>
+      <div class="mdc-linear-progress__buffer"></div>
+      <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+        <span class="mdc-linear-progress__bar-inner"></span>
+      </div>
+      <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+        <span class="mdc-linear-progress__bar-inner"></span>
+      </div>
+    </div>
     <div id="assignment-page"></div>
   </section>
 </main>
 {% endblock %}
 {% block scripts %}
 {{ block.super }}
+{% compress js %}
+<script src="{% static 'peerinst/js/teacher.min.js' %}"></script>
+{% endcompress %}
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://unpkg.com/json5@2.1.1/dist/index.min.js" integrity="sha384-gRrJKgBpstjyexh9UmCoTPivgMMb7/EAtEdR5DLbVhiPYdl03QxdzMzbylHUSloD" crossorigin="anonymous"></script>
 <script nonce="{{ request.csp_nonce }}">
@@ -203,7 +219,6 @@
 
     [].forEach.call(document.querySelectorAll('.plot-dialog'),
       function(el,i,list) {
-        console.log(el);
         let show = false;
         const getMatrixJson = JSON5.parse(el.getAttribute("data-get-matrix"));
         Object.keys(getMatrixJson).forEach(function (property) {
@@ -215,8 +230,7 @@
           bundle.plot(getMatrixJson, JSON5.parse(el.getAttribute("data-get-frequency")),+el.getAttribute("data-id"));
         } else {
           const desc = document.getElementById("description-"+el.getAttribute("data-id"));
-          console.log(desc);
-          $(desc).children().slice(0,4).remove();
+          $(desc).children().slice(0,5).remove();
         }
       }
     );
@@ -236,16 +250,22 @@
   }
 
   window.addEventListener("load", function() {
+    $("#progressbar").removeClass("mdc-linear-progress--closed");
     $('#assignment-page').load("{% url 'collection-paginate' %}", "collection_pk="+"{{ object.pk }}", function(response){
+      $("#progressbar").addClass("mdc-linear-progress--closed");
       setupPaginate();
       setupPaginateButtons();
+      teacher.initSearchFlag("{% url 'question--flag--reasons' %}", "{% url 'question--flag--flag' %}");
     });
   });
 
   function loadPage(page){
+    $("#progressbar").removeClass("mdc-linear-progress--closed");
     $('#assignment-page').load("{% url 'collection-paginate' %}"+"?page="+page, "collection_pk="+"{{ object.pk }}", function(response){
+      $("#progressbar").addClass("mdc-linear-progress--closed");
       setupPaginate();
       setupPaginateButtons();
+      teacher.initSearchFlag("{% url 'question--flag--reasons' %}", "{% url 'question--flag--flag' %}");
     });
   }
 
