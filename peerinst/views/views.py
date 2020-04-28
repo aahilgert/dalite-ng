@@ -1336,6 +1336,8 @@ class QuestionReviewView(QuestionReviewBaseView):
             self.record_fake_attribution_vote(
                 chosen_rationale, models.AnswerVote.FINAL_CHOICE
             )
+            chosen_rationale.rationale_chosen_counter += 1
+            chosen_rationale.save()
 
     def save_votes(self):
         rationale_votes = self.stage_data.get("rationale_votes")
@@ -1392,6 +1394,8 @@ class QuestionReviewView(QuestionReviewBaseView):
             ShownRationale.objects.create(
                 shown_for_answer=self.answer, shown_answer=answer
             )
+            answer.rationale_shown_counter += 1
+            answer.save()
 
 
 class QuestionSummaryView(QuestionMixin, TemplateView):
