@@ -1394,8 +1394,9 @@ class QuestionReviewView(QuestionReviewBaseView):
             ShownRationale.objects.create(
                 shown_for_answer=self.answer, shown_answer=answer
             )
-            answer.rationale_shown_counter += 1
-            answer.save()
+            if answer is not None:
+                answer.rationale_shown_counter += 1
+                answer.save()
 
 
 class QuestionSummaryView(QuestionMixin, TemplateView):
