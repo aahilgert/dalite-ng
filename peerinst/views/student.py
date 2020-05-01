@@ -18,6 +18,7 @@ from tos.models import Consent
 
 from ..mixins import LoginRequiredMixin
 from ..models import (
+    Answer,
     Student,
     StudentAssignment,
     StudentGroup,
@@ -57,9 +58,42 @@ class StudentGroupReviewDetailView(LoginRequiredMixin, DetailView):
         )
         student_group = self.get_object()
         student = get_object_or_404(Student, student=self.request.user)
-        context["student_assignments"] = StudentAssignment.objects.filter(
+        student_assignments = StudentAssignment.objects.filter(
             student=student, group_assignment__group=student_group
         ).order_by("-group_assignment__due_date")
+        student_assignments_dict = [
+            {
+                "completed": student_assignment.completed,
+                "title": student_assignment.group_assignment.assignment.title,
+                "show_correct_answers": student_assignment.group_assignment.show_correct_answers,
+                "questions": [
+                    (
+                        question,
+                        Answer.objects.filter(
+                            expert=True, show_to_others=True, question=question
+                        ).first()
+                        if Answer.objects.filter(
+                            expert=True, show_to_others=True, question=question
+                        )
+                        else None,
+                        Answer.objects.filter(
+                            question=question,
+                            user_token=self.request.user.username,
+                            assignment=student_assignment.group_assignment.assignment,
+                        ).first()
+                        if Answer.objects.filter(
+                            question=question,
+                            user_token=self.request.user.username,
+                            assignment=student_assignment.group_assignment.assignment,
+                        )
+                        else None,
+                    )
+                    for question in student_assignment.group_assignment.assignment.questions.all()
+                ],
+            }
+            for student_assignment in student_assignments
+        ]
+        context["student_assignments"] = student_assignments_dict
         return context
 
 
