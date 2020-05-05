@@ -193,6 +193,128 @@ class QuestionViewTest(QuestionViewTestCase):
             self.mock_send_grade_signal.call_args_list, [send] * 2
         )
 
+    def run_standard_review_mode_extra_rationales(self):
+        response = self.question_get()
+        self.assertTemplateUsed(response, "peerinst/question/start.html")
+        self.assertEqual(response.context["assignment"], self.assignment)
+        self.assertEqual(response.context["question"], self.question)
+        self.assertEqual(
+            response.context["answer_choices"], self.answer_choices
+        )
+
+        # Provide a first answer and a rationale.
+        first_answer_choice = 2
+        first_choice_label = self.question.get_choice_label(2)
+        rationale = "my rationale text"
+        response = self.question_post(
+            first_answer_choice=first_answer_choice, rationale=rationale
+        )
+        self.assertTemplateUsed(response, "peerinst/question/review.html")
+        self.assertEqual(response.context["assignment"], self.assignment)
+        self.assertEqual(response.context["question"], self.question)
+        self.assertEqual(
+            response.context["answer_choices"], self.answer_choices
+        )
+        self.assertEqual(
+            response.context["first_choice_label"], first_choice_label
+        )
+        self.assertEqual(response.context["rationale"], rationale)
+        self.assertEqual(response.context["sequential_review"], False)
+        stage_data = SessionStageData(self.client.session, self.custom_key)
+        rationale_choices = stage_data.get("rationale_choices")
+
+        second_answer_choices = [
+            choice
+            for choice, unused_label, unused_rationales in rationale_choices
+        ]
+        self.assertIn(first_answer_choice, second_answer_choices)
+
+        for a in self.question.answer_set.filter(user_token="no_share"):
+            self.assertNotIn(a.rationale, str(rationale_choices))
+
+        # Select a different answer during review.
+        second_answer_choice = next(
+            choice
+            for choice in second_answer_choices
+            if choice != first_answer_choice
+        )
+        second_choice_label = self.question.get_choice_label(
+            second_answer_choice
+        )
+        chosen_rationale = int(rationale_choices[1][2][0][0])
+        response = self.question_post(
+            second_answer_choice=second_answer_choice,
+            rationale_choice_1=chosen_rationale,
+        )
+        self.assertTemplateUsed(response, "peerinst/question/summary.html")
+        self.assertEqual(response.context["assignment"], self.assignment)
+        self.assertEqual(response.context["question"], self.question)
+        self.assertEqual(
+            response.context["answer_choices"], self.answer_choices
+        )
+        self.assertEqual(
+            response.context["first_choice_label"], first_choice_label
+        )
+        self.assertEqual(
+            response.context["second_choice_label"], second_choice_label
+        )
+        self.assertEqual(response.context["rationale"], rationale)
+        self.assertEqual(
+            response.context["chosen_rationale"].id, chosen_rationale
+        )
+
+        answer = Answer.objects.get(
+            question=self.question,
+            assignment=self.assignment,
+            first_answer_choice=first_answer_choice,
+            rationale=rationale,
+        )
+        shown_rationales = [
+            Answer.objects.get(id=_rationale[0]) if _rationale[0] else None
+            for _, _, rationales in rationale_choices
+            for _rationale in rationales[:2]
+        ]
+
+        for _rationale in shown_rationales:
+            try:
+                ShownRationale.objects.get(
+                    shown_for_answer=answer, shown_answer=_rationale
+                )
+            except ShownRationale.DoesNotExist:
+                assert False
+
+        unshown_rationales = [
+            Answer.objects.get(id=_rationale[0]) if _rationale[0] else None
+            for _, _, rationales in rationale_choices
+            for _rationale in rationales[2:]
+        ]
+
+        for _rationale in unshown_rationales:
+            self.assertFalse(
+                ShownRationale.objects.filter(
+                    shown_for_answer=answer, shown_answer=_rationale
+                ).exists()
+            )
+
+        response = self.get_results_view()
+        self.assertTemplateUsed(
+            response, "peerinst/question/answers_summary.html"
+        )
+        self.assertEqual(response.context["question"], self.question)
+        first_choice_row = next(
+            row
+            for row in response.context["answer_rows"]
+            if first_choice_label in row[0]
+        )
+        second_choice_row = next(
+            row
+            for row in response.context["answer_rows"]
+            if second_choice_label in row[0]
+        )
+        self.assertEqual(first_choice_row[1], 1)
+        self.assertEqual(first_choice_row[2], 0)
+        self.assertEqual(second_choice_row[1], 0)
+
     def run_standard_review_mode(self):
         """Test answering questions in default mode."""
 
@@ -274,7 +396,7 @@ class QuestionViewTest(QuestionViewTestCase):
         shown_rationales = [
             Answer.objects.get(id=_rationale[0]) if _rationale[0] else None
             for _, _, rationales in rationale_choices
-            for _rationale in rationales
+            for _rationale in rationales[:2]
         ]
         for _rationale in shown_rationales:
             try:
@@ -307,6 +429,22 @@ class QuestionViewTest(QuestionViewTestCase):
         """Test answering questions in default mode, with scoring enabled."""
         self.mock_grade.return_value = Grade.INCORRECT
         self.run_standard_review_mode()
+        self.assert_grade_signal()
+        self.assertTrue(self.mock_grade.called)
+
+    def test_standard_review_mode_extra_rationales(self):
+        """Test answering questions in default mode with extra rationales,
+        with scoring enabled. Also testing shown rationales with no see more press."""
+        self.set_question(
+            factories.QuestionFactory(
+                answer_style=Question.NUMERIC,
+                choices=5,
+                choices__correct=[2, 4],
+                choices__rationales=6,
+            )
+        )
+        self.mock_grade.return_value = Grade.INCORRECT
+        self.run_standard_review_mode_extra_rationales()
         self.assert_grade_signal()
         self.assertTrue(self.mock_grade.called)
 
@@ -442,7 +580,7 @@ class QuestionViewTest(QuestionViewTestCase):
         shown_rationales = [
             Answer.objects.get(id=_rationale[0]) if _rationale[0] else None
             for _, _, rationales in rationale_choices
-            for _rationale in rationales
+            for _rationale in rationales[:2]
         ]
         for _rationale in shown_rationales:
             try:
@@ -516,8 +654,11 @@ class EventLogTest(QuestionViewTestCase):
         self.assertEqual(event["event"]["rationale"], "my rationale text")
         logger.reset_mock()
 
+        # Provide a first answer and a rationale.
         # Select our own rationale and verify the logged event
         self.question_post(second_answer_choice=2, rationale_choice_0="None")
+
+        # Select a rationale and verify the logged event
         event = self.verify_event(
             logger,
             scoring_disabled=scoring_disabled,

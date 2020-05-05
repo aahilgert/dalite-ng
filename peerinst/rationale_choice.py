@@ -27,7 +27,7 @@ To make an algorithm available to users, make sure to add it to
 the "algorithms" dictionary at the end of this file.
 """
 
-
+import random
 from itertools import chain
 
 from django.conf import settings
@@ -97,6 +97,37 @@ def _base_selection_algorithm(
     except Quality.DoesNotExist:
         pass
 
+    try:
+        """
+        test
+        t = is there at least two answer choices with rationales
+        tt = does my choice have a sample rationale
+        ttt = does at least one correct choice have a sample rationale
+        """
+        t = all_rationales.values("first_answer_choice").annotate(
+            answer_count=Count("first_answer_choice")
+        )[1]
+        tt = (
+            all_rationales.filter(first_answer_choice=first_choice)
+            .values("first_answer_choice")
+            .annotate(answer_count=Count("first_answer_choice"))[0]
+        )
+        for i, answer_choice in enumerate(answer_choices, 1):
+            if answer_choice.correct:
+                ttt = (
+                    all_rationales.filter(first_answer_choice=i)
+                    .values("first_answer_choice")
+                    .annotate(answer_count=Count("first_answer_choice"))[0]
+                )
+                break
+
+    except IndexError:
+        raise RationaleSelectionError(
+            ugettext(
+                """Can't proceed since the course staff did not
+                provide example answers."""
+            )
+        )
     # Select a second answer to offer at random.
     # If the user's answer wasn't correct, the
     # second answer choice offered must be correct.
@@ -107,47 +138,98 @@ def _base_selection_algorithm(
         other_rationales = all_rationales.exclude(
             first_answer_choice=first_choice
         )
+
+        sorted_choices = (
+            other_rationales.values("first_answer_choice")
+            .annotate(answer_count=Count("first_answer_choice"))
+            .order_by("-answer_count")
+        )
+
+        if len(sorted_choices) > 0:
+            second_choice = sorted_choices[0]["first_answer_choice"]
+        else:
+            second_choice = None
+        if len(sorted_choices) > 1:
+            third_choice = sorted_choices[1]["first_answer_choice"]
+        else:
+            third_choice = None
+
         # We don't use rng.choice() to avoid fetching all rationales
         # from the database.
         try:
-            random_rationale = other_rationales[
-                rng.randrange(other_rationales.count())
-            ]
-        except ValueError:
+            t = sorted_choices[0]
+        except IndexError:
             raise RationaleSelectionError(
                 ugettext(
                     """Can't proceed since the course staff did not
                     provide example answers."""
                 )
             )
-        second_choice = random_rationale.first_answer_choice
+
     else:
         # Select a random correct answer.  We assume that a correct
         # answer exists.
         second_choice = rng.choice(
             [i for i, choice in enumerate(answer_choices, 1) if choice.correct]
         )
-    chosen_choices = []
-    for choice in [first_choice, second_choice]:
-        label = question.get_choice_label(choice)
-        # Get all rationales for the current choice.
-        rationales = all_rationales.filter(first_answer_choice=choice)
-        # Select up to four rationales for each choice, if available.
-        if rationales:
-            rationales = selection_callback(rng, rationales)
-            rationales = [(r.id, r.rationale) for r in rationales]
+        if len(answer_choices) > 2:
+            other_rationales = all_rationales.exclude(
+                first_answer_choice__in=[first_choice, second_choice]
+            )
+            sorted_choices = (
+                other_rationales.values("first_answer_choice")
+                .annotate(answer_count=Count("first_answer_choice"))
+                .order_by("-answer_count")
+            )
+            if len(sorted_choices) > 0:
+                third_choice = sorted_choices[0]["first_answer_choice"]
+            else:
+                third_choice = None
         else:
-            rationales = []
-        chosen_choices.append((choice, label, rationales))
+            third_choice = None
+    chosen_choices = []
+
+    """
+    randomly sorts the answer choices after the answer choice chosen by the student
+    """
+    if bool(random.getrandbits(1)):
+        answer_choices_list = [first_choice, second_choice, third_choice]
+    else:
+        answer_choices_list = [first_choice, third_choice, second_choice]
+
+    for choice in answer_choices_list:
+        if choice:
+            label = question.get_choice_label(choice)
+            # Get all rationales for the current choice.
+            """
+            only shows expert rationale if there aren't enough non-expert rationales
+            """
+            rationales = (
+                all_rationales.filter(first_answer_choice=choice, expert=False)
+                if all_rationales.filter(
+                    first_answer_choice=choice, expert=False
+                ).count()
+                > 1
+                else all_rationales.filter(first_answer_choice=choice)
+            )
+            # Select up to four rationales for each choice, if available.
+            if rationales:
+                rationales = selection_callback(rng, rationales)
+                rationales = [(r.id, r.rationale) for r in rationales]
+            else:
+                rationales = []
+            chosen_choices.append((choice, label, rationales))
     # Include the rationale the student entered in the choices.
+
     chosen_choices[0][2].append(
         (None, ugettext("I stick with my own rationale."))
     )
+
     return chosen_choices
 
 
 def simple(
-    rng, first_answer_choice, entered_rationale, question, max_rationales=4
+    rng, first_answer_choice, entered_rationale, question, max_rationales=10
 ):
     def callback(rng, rationales):
         return rng.sample(
@@ -224,7 +306,7 @@ def prefer_expert_and_highly_voted(
         # Fill up with random other rationales
         chosen.extend(
             rng.sample(
-                list(rationales), min(4 - len(chosen), rationales.count())
+                list(rationales), min(10 - len(chosen), rationales.count())
             )
         )
         rng.shuffle(chosen)

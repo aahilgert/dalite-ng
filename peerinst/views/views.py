@@ -1261,7 +1261,7 @@ class QuestionReviewView(QuestionReviewBaseView):
         self.save_votes()
         self.stage_data.clear()
         self.send_grade()
-        self.save_shown_rationales()
+        self.save_shown_rationales(form.shown_rationales)
         return super(QuestionReviewView, self).form_valid(form)
 
     def emit_check_events(self):
@@ -1375,18 +1375,23 @@ class QuestionReviewView(QuestionReviewBaseView):
             vote_type=vote_type,
         ).save()
 
-    def save_shown_rationales(self):
+    def save_shown_rationales(self, shown_rationale_pks=None):
         """
         Saves in the databse which rationales were shown to the student. These
         are linked to the answer.
+        Stick to my rationale is no longer saved as ShownRationale with an empty shown_answer
         """
         rationale_ids = [
             rationale[0]
             for _, _, rationales in self.rationale_choices
             for rationale in rationales
         ]
-        shown_answers = list(Answer.objects.filter(id__in=rationale_ids))
-        if None in rationale_ids:
+        shown_answers = (
+            list(Answer.objects.filter(id__in=rationale_ids))
+            if shown_rationale_pks is None
+            else list(Answer.objects.filter(id__in=shown_rationale_pks))
+        )
+        if shown_rationale_pks is None and None in rationale_ids:
             shown_answers += [None]
         for answer in shown_answers:
             ShownRationale.objects.create(

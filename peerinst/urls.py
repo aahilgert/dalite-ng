@@ -4,7 +4,7 @@ from django.conf.urls import include
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import user_passes_test
-from django.urls import URLPattern, path, re_path
+from django.urls import URLPattern, path
 from django.views.decorators.cache import cache_page
 
 # testing
@@ -131,8 +131,8 @@ def old_patterns():
             views.live,
             name="live",
         ),
-        re_path(
-            "live/navigate/(?P<assignment_id>\w+)/(?P<question_id>\d+)/(?P<direction>(next|prev|goto))/(?P<index>[0-9x]+)",  # noqa
+        path(
+            "live/navigate/<assignment_id>/<question_id>/<direction>/<index>",  # noqa
             views.navigate_assignment,
             name="navigate-assignment",
         ),

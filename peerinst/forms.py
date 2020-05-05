@@ -93,17 +93,27 @@ class ReviewAnswerForm(forms.Form):
         label="", widget=forms.RadioSelect
     )
 
+    shown_rationales = []
+
     RATIONALE_CHOICE = "rationale_choice"
 
     def __init__(self, rationale_choices, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
         answer_choices = []
         rationale_choice_fields = []
+        show_more_counters = []
+        show_more_labels = []
+        rationale_id_list = []
         for i, (choice, label, rationales) in enumerate(rationale_choices):
             rationales = [
                 (id_ if id_ is not None else "None", rationale)
                 for id_, rationale in rationales
             ]
+            rationale_ids = [
+                (id_ if id_ is not None else "None")
+                for id_, rationale in rationales
+            ]
+
             field_name = "{}_{}".format(self.RATIONALE_CHOICE, i)
             self.fields[field_name] = forms.ChoiceField(
                 label="",
@@ -111,15 +121,48 @@ class ReviewAnswerForm(forms.Form):
                 widget=forms.RadioSelect,
                 choices=rationales,
             )
+            show_more_field_name = "show-more-counter-" + str(i + 1)
+            self.fields[show_more_field_name] = forms.IntegerField(
+                required=False, initial=2
+            )
+            show_more_counters.append(self[show_more_field_name])
+            show_more_labels.append(show_more_field_name)
             answer_choices.append((choice, label))
             rationale_choice_fields.append(self[field_name])
+            rationale_id_list.append(rationale_ids)
         self.fields["second_answer_choice"].choices = answer_choices
         self.rationale_groups = list(
-            zip(self["second_answer_choice"], rationale_choice_fields)
+            zip(
+                self["second_answer_choice"],
+                rationale_choice_fields,
+                show_more_counters,
+                show_more_labels,
+                rationale_id_list,
+            )
         )
 
     def clean(self):
         cleaned_data = forms.Form.clean(self)
+        shown_rationales = []
+        if cleaned_data is not None:
+            for (
+                answer_choice,
+                rationale_choice_field,
+                show_more_counter,
+                label,
+                rationale_ids,
+            ) in self.rationale_groups:
+                for i in (
+                    range(cleaned_data[label])
+                    if cleaned_data[label]
+                    else range(min(2, len(rationale_ids)))
+                ):
+                    if (
+                        rationale_ids[i] is not None
+                        and rationale_ids[i] != "None"
+                    ):
+                        shown_rationales.append(rationale_ids[i])
+        self.shown_rationales = shown_rationales if shown_rationales else None
         rationale_choices = [
             value
             for key, value in cleaned_data.items()
