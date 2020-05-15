@@ -5,7 +5,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime
+from datetime import datetime, date
 
 import pytz
 from django.conf import settings
@@ -1663,7 +1663,7 @@ def question(request, assignment_id, question_id):
                 year=student_group.year, semester=student_group.semester,
             )
         else:
-            semester_int = (datetime.date.today().month - 1) // 4
+            semester_int = (date.today().month - 1) // 4
             if semester_int == 0:
                 semester = Answer.WINTER
             elif semester_int == 1:
@@ -1671,7 +1671,7 @@ def question(request, assignment_id, question_id):
             else:
                 semester = Answer.FALL
             stage_data.update(
-                year=datetime.date.today().year, semester=semester,
+                year=date.today().year, semester=semester,
             )
         stage_class = QuestionStartView
 
