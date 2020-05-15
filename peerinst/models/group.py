@@ -38,7 +38,7 @@ class StudentGroup(models.Model):
         max_length=6, choices=SEMESTER_CHOICES, default=FALL
     )
     year = models.PositiveIntegerField(
-        validators=[MinValueValidator(2015), max_value_current_year]
+        validators=[MinValueValidator(0), max_value_current_year], default=0
     )
 
     def __str__(self):
