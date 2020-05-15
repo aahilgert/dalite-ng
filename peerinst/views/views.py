@@ -1330,6 +1330,8 @@ class QuestionReviewView(QuestionReviewBaseView):
             datetime_start=self.datetime_start,
             datetime_first=self.datetime_first,
             datetime_second=datetime.now(pytz.utc),
+            semester=self.stage_data.get("semester"),
+            year=self.stage_data.get("year"),
         )
         self.answer.save()
         if chosen_rationale is not None:
@@ -1600,6 +1602,26 @@ def question(request, assignment_id, question_id):
     custom_key = str(assignment.pk) + ":" + str(question.pk)
     stage_data = SessionStageData(request.session, custom_key)
     user_token = request.user.username
+
+    if request.GET.get("student_group_pk", None):
+        student_group = StudentGroup.objects.get(
+            pk=request.GET.get("student_group_pk")
+        )
+        stage_data.update(
+            year=student_group.year, semester=student_group.semester,
+        )
+        latest_answer = models.Answer.objects.filter(
+            assignment=assignment,
+            question=question,
+            user_token=user_token,
+            year=student_group.year,
+            semester=student_group.semester,
+        ).last()
+    else:
+        latest_answer = models.Answer.objects.filter(
+            assignment=assignment, question=question, user_token=user_token,
+        ).last()
+
     view_data = dict(
         request=request,
         assignment=assignment,
@@ -1611,9 +1633,7 @@ def question(request, assignment_id, question_id):
         lti_data=get_object_or_none(
             LtiUserData, user=request.user, custom_key=custom_key
         ),
-        answer=models.Answer.objects.filter(
-            assignment=assignment, question=question, user_token=user_token,
-        ).last(),
+        answer=latest_answer,
     )
 
     # Determine stage and view class
@@ -1634,6 +1654,24 @@ def question(request, assignment_id, question_id):
                 datetime_start=datetime.now(pytz.utc).strftime(
                     "%Y-%m-%d %H:%M:%S.%f"
                 )
+            )
+        if request.GET.get("student_group_pk", None):
+            student_group = StudentGroup.objects.get(
+                pk=request.GET.get("student_group_pk")
+            )
+            stage_data.update(
+                year=student_group.year, semester=student_group.semester,
+            )
+        else:
+            semester_int = (datetime.date.today().month - 1) // 4
+            if semester_int == 0:
+                semester = Answer.WINTER
+            elif semester_int == 1:
+                semester = Answer.SUMMER
+            else:
+                semester = Answer.FALL
+            stage_data.update(
+                year=datetime.date.today().year, semester=semester,
             )
         stage_class = QuestionStartView
 

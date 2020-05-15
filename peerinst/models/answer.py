@@ -1,4 +1,7 @@
+import datetime
+
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -40,7 +43,24 @@ class AnswerChoice(models.Model):
         verbose_name_plural = _("answer choices")
 
 
+def current_year():
+    return datetime.date.today().year
+
+
+def max_value_current_year(value):
+    return MaxValueValidator(current_year() + 1)(value)
+
+
 class Answer(models.Model):
+    FALL = "FALL"
+    SUMMER = "SUMMER"
+    WINTER = "WINTER"
+
+    SEMESTER_CHOICES = (
+        (FALL, "Fall"),
+        (SUMMER, "Summer"),
+        (WINTER, "Winter"),
+    )
     objects = models.Manager()
     may_show = AnswerMayShowManager()
 
@@ -97,6 +117,13 @@ class Answer(models.Model):
         help_text="Which quality was used to filter shown rationales.",
         related_name="filtering_quality",
         on_delete=models.CASCADE,
+    )
+
+    semester = models.CharField(
+        max_length=6, choices=SEMESTER_CHOICES, default=FALL
+    )
+    year = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), max_value_current_year], default=0
     )
 
     def first_answer_choice_label(self):
