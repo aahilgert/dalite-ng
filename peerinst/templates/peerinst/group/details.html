@@ -22,7 +22,7 @@ https://datatables.net/extensions/buttons/examples/styling/jqueryui.html
   .small {
     font-size: smaller;
   }
-  ul {
+  #teachers-with-access-list {
     padding-left:0px;
   }
 </style>
@@ -290,8 +290,8 @@ https://datatables.net/extensions/buttons/examples/styling/jqueryui.html
         <ul id="assignment-list" class="mdc-list mdc-list--two-line">
           {% for a in assignments %}
           <li class="mdc-list-divider" role="separator"></li>
-          <li class="mdc-list-item pointer assignment-link">
-            <span class="mdc-list-item__graphic mdc-theme--primary">
+          <li class="mdc-list-item">
+            <span class="mdc-list-item__graphic mdc-theme--primary pointer assignment-link">
               <i class="mdc-theme--primary material-icons md-48">work</i>
             </span>
             <span class="mdc-list-item__text mdc-theme--secondary bold">
