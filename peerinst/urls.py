@@ -125,6 +125,11 @@ def old_patterns():
             views.collection_search,
             name="collection-search",
         ),
+        path(
+            "live/access/<int:group_assignment_id>",  # noqa
+            views.lti_live,
+            name="lti-live",
+        ),
         # Standalone
         path(
             "live/access/<token>/<assignment_hash>",  # noqa

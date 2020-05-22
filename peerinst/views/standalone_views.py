@@ -88,6 +88,76 @@ def signup_through_link(request, group_hash):
 
 
 @require_safe
+def lti_live(request, group_assignment_id):
+    group_assignment = StudentGroupAssignment.objects.get(
+        pk=group_assignment_id
+    )
+
+    # Register access type
+    request.session["LTI"] = True
+
+    # Get assignment for this token and current question
+    if group_assignment is None:
+        return response_404(
+            request,
+            msg=_(
+                "This url doesn't correspond to any assignment. "
+                "It may have been deleted by your teacher."
+            ),
+            logger_msg=(
+                "Access to live was tried for unknown assignment with id "
+                "{} by user {}.".format(group_assignment.pk, request.user.pk)
+            ),
+            log=logger.warning,
+        )
+
+    group = group_assignment.group
+    """
+    if group.student_id_needed:
+        group_membership = StudentGroupMembership.objects.get(
+            student=request.user.student, group=group
+        )
+        if not group_membership.student_school_id:
+            return HttpResponseRedirect(
+                reverse("student-page")
+                + "?group-student-id-needed="
+                + group.name
+            )
+    """
+
+    student_assignment = StudentAssignment.objects.get(
+        student=request.user.student, group_assignment=group_assignment
+    )
+
+    assignment = student_assignment.group_assignment
+    current_question = student_assignment.get_current_question()
+    has_expired = student_assignment.group_assignment.expired
+
+    if has_expired or current_question is None:
+        return HttpResponseRedirect(reverse("finish-assignment"))
+
+    questions = assignment.questions
+    idx = questions.index(current_question)
+
+    request.session["assignment_first"] = idx == 0
+    request.session["assignment_last"] = idx == len(questions) - 1
+    request.session["assignment_expired"] = has_expired
+
+    # Redirect to view
+    return HttpResponseRedirect(
+        reverse(
+            "question",
+            kwargs={
+                "assignment_id": assignment.assignment.pk,
+                "question_id": current_question.id,
+            },
+        )
+        + "?student_group_pk="
+        + str(group_assignment.pk)
+    )
+
+
+@require_safe
 def live(request, token, assignment_hash):
 
     # Call logout to ensure a clean session

@@ -76,7 +76,7 @@ class ApplicationHookManager(AbstractApplicationHookManager):
     def authenticated_redirect_to(self, request, lti_data):
         action = lti_data.get("custom_action")
         assignment_id = lti_data.get("custom_assignment_id")
-        question_id = lti_data.get("custom_question_id")
+        question_id = lti_data.get("custom_question_id", None)
         student_group_assignment_id = lti_data.get(
             "custom_student_group_assignment_id", None
         )
@@ -87,6 +87,11 @@ class ApplicationHookManager(AbstractApplicationHookManager):
         elif action == "edit-question":
             return reverse(
                 "admin:peerinst_question_change", args=(question_id,)
+            )
+        elif question_id is None:
+            return reverse(
+                "live",
+                kwargs=dict(group_assignment_id=student_group_assignment_id),
             )
 
         redirect_url = (
