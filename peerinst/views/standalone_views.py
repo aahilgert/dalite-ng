@@ -174,7 +174,7 @@ def live(request, token, assignment_hash):
             },
         )
         + "?student_group_pk="
-        + group_assignment.group.pk
+        + str(group_assignment.pk)
     )
 
 
@@ -247,7 +247,9 @@ def navigate_assignment(request, assignment_id, question_id, direction, index):
             request.session["assignment_expired"] = assignment.expired
             return HttpResponseRedirect(reverse("finish-assignment"))
 
-        group_pk_param = "?student_group_pk=" + assignment.group.pk
+        group_assignment_pk_param = "?student_group_assignment_pk=" + str(
+            assignment.pk
+        )
 
     # Redirect
     return HttpResponseRedirect(
@@ -258,7 +260,7 @@ def navigate_assignment(request, assignment_id, question_id, direction, index):
                 "question_id": new_question.id,
             },
         )
-        + group_pk_param
+        + group_assignment_pk_param
     )
 
 
