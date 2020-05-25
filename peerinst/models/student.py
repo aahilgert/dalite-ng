@@ -642,9 +642,7 @@ class StudentAssignment(models.Model):
         bool
             If the assignment was completed
         """
-        if self.first_access > datetime.strptime(
-            "06/25/20 12:00:00", "%m/%d/%y %H:%M:%S"
-        ):
+        if self.first_access.year > 2020 and self.first_access.month > 6:
             return not any(
                 not Answer.objects.filter(
                     student_group_assignment=self,
@@ -698,9 +696,7 @@ class StudentAssignment(models.Model):
                 }
             ]
         """
-        if self.first_access > datetime.strptime(
-            "06/25/20 12:00:00", "%m/%d/%y %H:%M:%S"
-        ):
+        if self.first_access.year > 2020 and self.first_access.month > 6:
             answers = [
                 (
                     Answer.objects.filter(
