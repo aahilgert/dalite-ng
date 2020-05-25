@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import logging
+from datetime import datetime, timedelta
 
 from django.contrib.auth import get_permission_codename, login
 from django.contrib.auth.models import Permission, User
@@ -103,7 +104,9 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                             assignment_hash=StudentGroupAssignment.objects.create(
                                 assignment=Assignment.objects.get(
                                     pk=assignment_id
-                                )
+                                ),
+                                distribution_date=datetime.now(),
+                                due_date=datetime.now() + timedelta(days=365),
                             )
                             .first()
                             .hash,
