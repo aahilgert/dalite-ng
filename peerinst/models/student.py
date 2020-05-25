@@ -642,21 +642,42 @@ class StudentAssignment(models.Model):
         bool
             If the assignment was completed
         """
-        return not any(
-            not Answer.objects.filter(
-                assignment=self.group_assignment.assignment,
-                user_token=self.student.student.username,
-                question=question,
-            ).exists()
-            or not Answer.objects.filter(
-                assignment=self.group_assignment.assignment,
-                user_token=self.student.student.username,
-                question=question,
+        if self.first_access > datetime.strptime(
+            "06/25/20 12:00:00", "%m/%d/%y %H:%M:%S"
+        ):
+            return not any(
+                not Answer.objects.filter(
+                    student_group_assignment=self,
+                    assignment=self.group_assignment.assignment,
+                    user_token=self.student.student.username,
+                    question=question,
+                ).exists()
+                or not Answer.objects.filter(
+                    student_group_assignment=self,
+                    assignment=self.group_assignment.assignment,
+                    user_token=self.student.student.username,
+                    question=question,
+                )
+                .last()
+                .completed
+                for question in self.group_assignment.questions
             )
-            .last()
-            .completed
-            for question in self.group_assignment.questions
-        )
+        else:
+            return not any(
+                not Answer.objects.filter(
+                    assignment=self.group_assignment.assignment,
+                    user_token=self.student.student.username,
+                    question=question,
+                ).exists()
+                or not Answer.objects.filter(
+                    assignment=self.group_assignment.assignment,
+                    user_token=self.student.student.username,
+                    question=question,
+                )
+                .last()
+                .completed
+                for question in self.group_assignment.questions
+            )
 
     @property
     def detailed_results(self):
@@ -677,17 +698,33 @@ class StudentAssignment(models.Model):
                 }
             ]
         """
-        answers = [
-            (
-                Answer.objects.filter(
-                    assignment=self.group_assignment.assignment,
-                    user_token=self.student.student.username,
-                    question=question,
-                )
-                or [None]
-            )[0]
-            for question in self.group_assignment.questions
-        ]
+        if self.first_access > datetime.strptime(
+            "06/25/20 12:00:00", "%m/%d/%y %H:%M:%S"
+        ):
+            answers = [
+                (
+                    Answer.objects.filter(
+                        student_group_assignment=self,
+                        assignment=self.group_assignment.assignment,
+                        user_token=self.student.student.username,
+                        question=question,
+                    )
+                    or [None]
+                )[0]
+                for question in self.group_assignment.questions
+            ]
+        else:
+            answers = [
+                (
+                    Answer.objects.filter(
+                        assignment=self.group_assignment.assignment,
+                        user_token=self.student.student.username,
+                        question=question,
+                    )
+                    or [None]
+                )[0]
+                for question in self.group_assignment.questions
+            ]
 
         return [
             {
