@@ -88,76 +88,6 @@ def signup_through_link(request, group_hash):
 
 
 @require_safe
-def lti_live(request, group_assignment_id):
-    group_assignment = StudentGroupAssignment.objects.get(
-        pk=group_assignment_id
-    )
-
-    # Register access type
-    request.session["LTI"] = True
-
-    # Get assignment for this token and current question
-    if group_assignment is None:
-        return response_404(
-            request,
-            msg=_(
-                "This url doesn't correspond to any assignment. "
-                "It may have been deleted by your teacher."
-            ),
-            logger_msg=(
-                "Access to live was tried for unknown assignment with id "
-                "{} by user {}.".format(group_assignment.pk, request.user.pk)
-            ),
-            log=logger.warning,
-        )
-
-    group = group_assignment.group
-    """
-    if group.student_id_needed:
-        group_membership = StudentGroupMembership.objects.get(
-            student=request.user.student, group=group
-        )
-        if not group_membership.student_school_id:
-            return HttpResponseRedirect(
-                reverse("student-page")
-                + "?group-student-id-needed="
-                + group.name
-            )
-    """
-
-    student_assignment = StudentAssignment.objects.get(
-        student=request.user.student, group_assignment=group_assignment
-    )
-
-    assignment = student_assignment.group_assignment
-    current_question = student_assignment.get_current_question()
-    has_expired = student_assignment.group_assignment.expired
-
-    if has_expired or current_question is None:
-        return HttpResponseRedirect(reverse("finish-assignment"))
-
-    questions = assignment.questions
-    idx = questions.index(current_question)
-
-    request.session["assignment_first"] = idx == 0
-    request.session["assignment_last"] = idx == len(questions) - 1
-    request.session["assignment_expired"] = has_expired
-
-    # Redirect to view
-    return HttpResponseRedirect(
-        reverse(
-            "question",
-            kwargs={
-                "assignment_id": assignment.assignment.pk,
-                "question_id": current_question.id,
-            },
-        )
-        + "?student_group_pk="
-        + str(group_assignment.pk)
-    )
-
-
-@require_safe
 def live(request, token, assignment_hash):
 
     # Call logout to ensure a clean session
@@ -170,7 +100,9 @@ def live(request, token, assignment_hash):
     login(request, user)
 
     # Register access type
-    request.session["LTI"] = False
+    is_lti = request.POST.get("is_lti", None)
+
+    request.session["LTI"] = True if is_lti else False
 
     # Get assignment for this token and current question
     group_assignment = StudentGroupAssignment.get(assignment_hash)
@@ -199,26 +131,32 @@ def live(request, token, assignment_hash):
                 + "?group-student-id-needed="
                 + group.name
             )
-
-    student_assignment = StudentAssignment.objects.get(
-        student=user.student, group_assignment=group_assignment
-    )
+    try:
+        student_assignment = StudentAssignment.objects.get(
+            student=user.student, group_assignment=group_assignment
+        )
+    except StudentAssignment.DoesNotExist:
+        student_assignment = StudentGroup(
+            student=user.student, group_assignment=group_assignment
+        )
+        student_assignment.save()
 
     # Register assignment
     request.session["assignment"] = assignment_hash
 
     # Register quality
-    if group_assignment.quality:
-        request.session["quality"] = group_assignment.quality.pk
-    elif group_assignment.group.quality:
-        request.session["quality"] = group_assignment.group.quality.pk
-    elif (
-        group_assignment.group.teacher.exists()
-        and group_assignment.group.teacher.first().quality
-    ):
-        request.session[
-            "quality"
-        ] = group_assignment.group.teacher.first().quality.pk
+    if not is_lti:
+        if group_assignment.quality:
+            request.session["quality"] = group_assignment.quality.pk
+        elif group_assignment.group.quality:
+            request.session["quality"] = group_assignment.group.quality.pk
+        elif (
+            group_assignment.group.teacher.exists()
+            and group_assignment.group.teacher.first().quality
+        ):
+            request.session[
+                "quality"
+            ] = group_assignment.group.teacher.first().quality.pk
 
     assignment = student_assignment.group_assignment
     current_question = student_assignment.get_current_question()

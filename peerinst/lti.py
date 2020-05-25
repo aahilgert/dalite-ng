@@ -8,6 +8,8 @@ from django.urls import reverse
 from django_lti_tool_provider import AbstractApplicationHookManager
 
 from peerinst.auth import authenticate_student
+from .students import create_student_token
+from peerinst.models import StudentGroupAssignment, Assignment
 
 logger = logging.getLogger(__name__)
 
@@ -89,10 +91,44 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                 "admin:peerinst_question_change", args=(question_id,)
             )
         elif question_id is None:
-            return reverse(
-                "live",
-                kwargs=dict(group_assignment_id=student_group_assignment_id),
-            )
+            if student_group_assignment_id is None:
+                return (
+                    reverse(
+                        "live",
+                        kwargs=dict(
+                            token=create_student_token(
+                                request.user.student.username,
+                                request.user.student.email,
+                            ),
+                            assignment_hash=StudentGroupAssignment.objects.create(
+                                assignment=Assignment.objects.get(
+                                    pk=assignment_id
+                                )
+                            )
+                            .first()
+                            .hash,
+                        ),
+                    )
+                    + "&is_lti=true"
+                )
+            else:
+                return (
+                    reverse(
+                        "live",
+                        kwargs=dict(
+                            token=create_student_token(
+                                request.user.student.username,
+                                request.user.student.email,
+                            ),
+                            assignment_hash=StudentGroupAssignment.objects.filter(
+                                pk=student_group_assignment_id
+                            )
+                            .first()
+                            .hash,
+                        ),
+                    )
+                    + "&is_lti=true"
+                )
 
         redirect_url = (
             reverse(
