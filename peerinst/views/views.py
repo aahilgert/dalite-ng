@@ -1620,7 +1620,7 @@ def question(request, assignment_id, question_id):
 
     if request.GET.get("student_group_assignment_pk", None) is not None:
         student_group_assignment = StudentGroupAssignment.objects.get(
-            pk=request.GET.get("student_group_assignment_pk")
+            pk=int(request.GET.get("student_group_assignment_pk"))
         )
         latest_answer = models.Answer.objects.filter(
             assignment=assignment,
@@ -1666,10 +1666,10 @@ def question(request, assignment_id, question_id):
                     "%Y-%m-%d %H:%M:%S.%f"
                 )
             )
-        if request.GET.get("student_group_assignment_pk", None):
+        if request.GET.get("student_group_assignment_pk", None) is not None:
             stage_data.update(
-                student_group_assignment_pk=request.GET.get(
-                    "student_group_assignment_pk"
+                student_group_assignment_pk=int(
+                    request.GET.get("student_group_assignment_pk")
                 )
             )
         else:
