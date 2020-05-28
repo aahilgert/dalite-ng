@@ -1333,21 +1333,36 @@ class QuestionReviewView(QuestionReviewBaseView):
         else:
             # We stuck with our own rationale.
             chosen_rationale = None
-        self.answer = models.Answer(
-            question=self.question,
-            assignment=self.assignment,
-            first_answer_choice=self.first_answer_choice,
-            rationale=self.rationale,
-            second_answer_choice=self.second_answer_choice,
-            chosen_rationale=chosen_rationale,
-            user_token=self.user_token,
-            datetime_start=self.datetime_start,
-            datetime_first=self.datetime_first,
-            datetime_second=datetime.now(pytz.utc),
-            student_group_assignment=models.StudentGroupAssignment.objects.filter(
-                pk=self.stage_data.get("student_group_assignment_pk")
-            ).first(),
-        )
+        if self.stage_data.get("student_group_assignment_pk", None) is None:
+            self.answer = models.Answer(
+                question=self.question,
+                assignment=self.assignment,
+                first_answer_choice=self.first_answer_choice,
+                rationale=self.rationale,
+                second_answer_choice=self.second_answer_choice,
+                chosen_rationale=chosen_rationale,
+                user_token=self.user_token,
+                datetime_start=self.datetime_start,
+                datetime_first=self.datetime_first,
+                datetime_second=datetime.now(pytz.utc),
+            )
+        else:
+            self.answer = models.Answer(
+                question=self.question,
+                assignment=self.assignment,
+                first_answer_choice=self.first_answer_choice,
+                rationale=self.rationale,
+                second_answer_choice=self.second_answer_choice,
+                chosen_rationale=chosen_rationale,
+                user_token=self.user_token,
+                datetime_start=self.datetime_start,
+                datetime_first=self.datetime_first,
+                datetime_second=datetime.now(pytz.utc),
+                student_group_assignment=models.StudentGroupAssignment.objects.filter(
+                    pk=self.stage_data.get("student_group_assignment_pk")
+                ).first(),
+            )
+
         self.answer.save()
         if chosen_rationale is not None:
             self.record_fake_attribution_vote(
@@ -1672,8 +1687,6 @@ def question(request, assignment_id, question_id):
                     request.GET.get("student_group_assignment_pk")
                 )
             )
-        else:
-            stage_data.update(student_group_assignment_pk=None)
         stage_class = QuestionStartView
 
     print(stage_class)
