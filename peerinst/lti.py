@@ -118,9 +118,7 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                                 ),
                                 distribution_date=datetime.now(),
                                 due_date=datetime.now() + timedelta(days=365),
-                            )
-                            .first()
-                            .hash,
+                            ).hash,
                         ),
                     )
                     + "&is_lti=true"
