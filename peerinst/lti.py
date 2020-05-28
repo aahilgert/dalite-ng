@@ -110,8 +110,7 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                         "live",
                         kwargs=dict(
                             token=create_student_token(
-                                request.user.student.username,
-                                request.user.student.email,
+                                request.user.username, request.user.email,
                             ),
                             assignment_hash=StudentGroupAssignment.objects.create(
                                 assignment=Assignment.objects.get(
@@ -132,8 +131,7 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                         "live",
                         kwargs=dict(
                             token=create_student_token(
-                                request.user.student.username,
-                                request.user.student.email,
+                                request.user.username, request.user.email,
                             ),
                             assignment_hash=StudentGroupAssignment.objects.filter(
                                 pk=student_group_assignment_id
