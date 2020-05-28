@@ -7,10 +7,17 @@ from django.contrib.auth import get_permission_codename, login
 from django.contrib.auth.models import Permission, User
 from django.urls import reverse
 from django_lti_tool_provider import AbstractApplicationHookManager
+from django_lti_tool_provider.models import LtiUserData
 
 from peerinst.auth import authenticate_student
 from .students import create_student_token
-from peerinst.models import StudentGroupAssignment, Assignment
+from peerinst.models import (
+    Assignment,
+    StudentGroup,
+    StudentGroupAssignment,
+    Teacher,
+)
+from .util import get_object_or_none
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +112,58 @@ class ApplicationHookManager(AbstractApplicationHookManager):
             )
         elif question_id is None:
             if student_group_assignment_id is None:
+                lti_user_data_object = get_object_or_none(
+                    LtiUserData,
+                    user=request.user,
+                    custom_key=str(assignment_id)
+                    + ":"
+                    + str(
+                        Assignment.objects.get(pk=assignment_id)
+                        .questions.all()
+                        .first()
+                        .pk
+                    ),
+                )
+                course_id = lti_user_data_object.edx_lti_parameters.get(
+                    "context_id"
+                )
+                course_title = lti_user_data_object.edx_lti_parameters.get(
+                    "context_title"
+                )
+                try:
+                    group = StudentGroup.objects.get(name=course_id)
+                except StudentGroup.DoesNotExist:
+                    if course_title:
+                        group = StudentGroup(
+                            name=course_id, title=course_title
+                        )
+                    else:
+                        group = StudentGroup(name=course_id)
+                    group.save()
+                teacher_hash = lti_user_data_object.edx_lti_parameters.get(
+                    "custom_teacher_id"
+                )
+                if teacher_hash is not None:
+                    teacher = Teacher.get(teacher_hash)
+                    if teacher not in group.teacher.all():
+                        group.teacher.add(teacher)
+                        teacher.current_groups.add(group)
+                        teacher.save()
+                if hasattr(self.request.user, "student"):
+                    self.request.user.student.groups.add(group)
+                try:
+                    student_group_assignment = StudentGroupAssignment.objects.get(
+                        group=group,
+                        assignment=Assignment.objects.get(pk=assignment_id),
+                    )
+                except StudentGroupAssignment.DoesNotExist:
+                    student_group_assignment = StudentGroupAssignment.objects.create(
+                        group=group,
+                        assignment=Assignment.objects.get(pk=assignment_id),
+                        distribution_date=datetime.now(),
+                        due_date=datetime.now() + timedelta(days=365),
+                    )
+
                 return (
                     reverse(
                         "live",
@@ -112,13 +171,7 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                             token=create_student_token(
                                 request.user.username, request.user.email,
                             ),
-                            assignment_hash=StudentGroupAssignment.objects.create(
-                                assignment=Assignment.objects.get(
-                                    pk=assignment_id
-                                ),
-                                distribution_date=datetime.now(),
-                                due_date=datetime.now() + timedelta(days=365),
-                            ).hash,
+                            assignment_hash=student_group_assignment.hash,
                         ),
                     )
                     + "&is_lti=true"

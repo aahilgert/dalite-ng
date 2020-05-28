@@ -1011,20 +1011,6 @@ class QuestionFormView(QuestionMixin, FormView):
                     group = StudentGroup(name=course_id)
                 group.save()
 
-            if (
-                self.stage_data.get("student_group_assignment_pk", None)
-                is not None
-            ):
-
-                student_group_assignment = StudentGroupAssignment.objects.filter(
-                    pk=self.stage_data.get("student_group_assignment_pk")
-                ).first()
-                try:
-                    student_group_of_assign = student_group_assignment.group
-                except StudentGroup.DoesNotExist:
-                    student_group_assignment.group = group
-                    student_group_assignment.save()
-
             # If teacher_id specified, add teacher to group
             teacher_hash = self.lti_data.edx_lti_parameters.get(
                 "custom_teacher_id"
