@@ -133,19 +133,25 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                     + "&is_lti=true"
                 )
 
-        redirect_url = (
-            reverse(
-                "question",
-                kwargs=dict(
-                    assignment_id=assignment_id, question_id=question_id
-                ),
-            )
-            + "?student_group_assignment_pk="
-            + str(student_group_assignment_id)
+        redirect_url = reverse(
+            "question",
+            kwargs=dict(assignment_id=assignment_id, question_id=question_id),
         )
 
         if show_results_view == "true":
-            redirect_url += "&show_results_view=true"
+            if student_group_assignment_id is None:
+                redirect_url += "?show_results_view=true"
+            else:
+                redirect_url += (
+                    "?student_group_assignment_pk="
+                    + str(student_group_assignment_id)
+                    + "&show_results_view=true"
+                )
+        elif student_group_assignment_id is not None:
+            redirect_url += "?student_group_assignment_pk=" + str(
+                student_group_assignment_id
+            )
+
         return redirect_url
 
     def authentication_hook(
