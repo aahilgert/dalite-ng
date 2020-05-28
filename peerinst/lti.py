@@ -53,7 +53,7 @@ def get_permissions_for_staff_user():
 
 
 class ApplicationHookManager(AbstractApplicationHookManager):
-    LTI_KEYS = ["custom_assignment_id", "custom_question_id"]
+    LTI_KEYS = ["custom_assignment_id"]
     ADMIN_ACCESS_ROLES = {LTIRoles.INSTRUCTOR, LTIRoles.STAFF}
 
     @classmethod
@@ -79,10 +79,22 @@ class ApplicationHookManager(AbstractApplicationHookManager):
     def authenticated_redirect_to(self, request, lti_data):
         action = lti_data.get("custom_action")
         assignment_id = lti_data.get("custom_assignment_id")
+
         question_id = lti_data.get("custom_question_id", None)
+        if (
+            question_id is not None
+            and "custom_question_id" not in self.LTI_KEYS
+        ):
+            self.LTI_KEYS.append("custom_question_id")
         student_group_assignment_id = lti_data.get(
             "custom_student_group_assignment_id", None
         )
+        if (
+            student_group_assignment_id is not None
+            and "custom_student_group_assignment_id" not in self.LTI_KEYS
+        ):
+            self.LTI_KEYS.append("custom_student_group_assignment_id")
+
         show_results_view = lti_data.get("custom_show_results_view", "false")
 
         if action == "launch-admin":
@@ -213,6 +225,20 @@ class ApplicationHookManager(AbstractApplicationHookManager):
         user.save()
 
     def vary_by_key(self, lti_data):
+        question_id = lti_data.get("custom_question_id", None)
+        if (
+            question_id is not None
+            and "custom_question_id" not in self.LTI_KEYS
+        ):
+            self.LTI_KEYS.append("custom_question_id")
+        student_group_assignment_id = lti_data.get(
+            "custom_student_group_assignment_id", None
+        )
+        if (
+            student_group_assignment_id is not None
+            and "custom_student_group_assignment_id" not in self.LTI_KEYS
+        ):
+            self.LTI_KEYS.append("custom_student_group_assignment_id")
         return ":".join(str(lti_data[k]) for k in self.LTI_KEYS)
 
     def optional_lti_parameters(self):
