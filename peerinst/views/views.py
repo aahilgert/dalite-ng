@@ -1618,7 +1618,7 @@ def question(request, assignment_id, question_id):
     stage_data = SessionStageData(request.session, custom_key)
     user_token = request.user.username
 
-    if request.GET.get("student_group_assignment_pk", None):
+    if request.GET.get("student_group_assignment_pk", None) is not None:
         student_group_assignment = StudentGroupAssignment.objects.get(
             pk=request.GET.get("student_group_assignment_pk")
         )
