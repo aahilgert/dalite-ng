@@ -105,7 +105,7 @@ def live(request, token, assignment_hash):
     request.session["LTI"] = True if is_lti else False
 
     # Get assignment for this token and current question
-    group_assignment = StudentGroupAssignment.get(assignment_hash)
+    group_assignment = StudentGroupAssignment.get(assignment_hash + "===")
     if group_assignment is None:
         return response_404(
             request,
