@@ -1,9 +1,6 @@
 "use strict";
 
 export function getCsrfToken() {
-  console.log(
-    document.getElementsByName("csrfmiddlewaretoken")[0].getAttribute("value"),
-  );
   return document
     .getElementsByName("csrfmiddlewaretoken")[0]
     .getAttribute("value");

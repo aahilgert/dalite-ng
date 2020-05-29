@@ -30,10 +30,8 @@ function validateFormSubmit(event) {
 
     const req = buildReq(data, "post");
     fetch(model.urls.submitUrl, req)
-      //.then(resp => resp.json())
-      .then(res => res.text())
-      .then(text => console.log(text));
-      /*.then(failed => {
+      .then(resp => resp.json())
+      .then(failed => {
         if (failed.failed.length) {
           toggleQualityError(failed.failed, failed.error_msg);
           document.querySelector("#answer-form").disabled = false;
@@ -42,8 +40,8 @@ function validateFormSubmit(event) {
           document.querySelector("#answer-form").disabled = true;
           document.querySelector("#submit-answer-form").submit();
         }
-      })*/
-      //.catch(err => console.log(err));
+      })
+      .catch(err => console.log(err));
   }
 }
 
