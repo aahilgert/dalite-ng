@@ -177,6 +177,11 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                     + "&is_lti=true"
                 )
             else:
+                student_group_assignment = StudentGroupAssignment.objects.filter(
+                    pk=student_group_assignment_id
+                ).first()
+                if hasattr(request.user, "student"):
+                    request.user.student.groups.add(group)
                 return (
                     reverse(
                         "live",
@@ -184,11 +189,7 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                             token=create_student_token(
                                 request.user.username, request.user.email,
                             ),
-                            assignment_hash=StudentGroupAssignment.objects.filter(
-                                pk=student_group_assignment_id
-                            )
-                            .first()
-                            .hash,
+                            assignment_hash=student_group_assignment.hash,
                         ),
                     )
                     + "&is_lti=true"
