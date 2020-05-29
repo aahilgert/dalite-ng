@@ -22,6 +22,7 @@
 {% block inner_form %}
 {{ form.non_field_errors }}
 <div class="rationales mdc-typography--body1">
+  {% csrf_token %}
   {% for second_answer_choice, rationale_choice, show_more_counters, label, rationale_ids in form.rationale_groups %}
   <div class="rationale" id="rationales-{{ forloop.counter0 }}">
     <div class="rationale-choice">{{ second_answer_choice }}.</div>
