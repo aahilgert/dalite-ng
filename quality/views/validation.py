@@ -14,12 +14,14 @@ from django.views.decorators.http import require_POST
 from dalite.views.errors import response_400
 
 from ..models import Quality, RejectedAnswer
+from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger("quality")
 
 
 @login_required
 @require_POST
+@csrf_exempt
 def validate_rationale(req):
     try:
         data = json.loads(req.body)
