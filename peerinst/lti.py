@@ -181,7 +181,9 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                     pk=student_group_assignment_id
                 ).first()
                 if hasattr(request.user, "student"):
-                    request.user.student.groups.add(group)
+                    request.user.student.groups.add(
+                        student_group_assignment.group
+                    )
                 return (
                     reverse(
                         "live",
