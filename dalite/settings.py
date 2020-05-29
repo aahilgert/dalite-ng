@@ -70,9 +70,6 @@ MIDDLEWARE = (
     "htmlmin.middleware.MarkRequestMiddleware",
 )
 
-CSRF_COOKIE_SAMESITE = None
-CSRF_COOKIE_SECURE = True
-
 ROOT_URLCONF = "dalite.urls"
 
 CUSTOM_SETTINGS = os.environ.get("CUSTOM_SETTINGS", "SALTISES4")
