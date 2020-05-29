@@ -149,8 +149,8 @@ class ApplicationHookManager(AbstractApplicationHookManager):
                         group.teacher.add(teacher)
                         teacher.current_groups.add(group)
                         teacher.save()
-                if hasattr(self.request.user, "student"):
-                    self.request.user.student.groups.add(group)
+                if hasattr(request.user, "student"):
+                    request.user.student.groups.add(group)
                 try:
                     student_group_assignment = StudentGroupAssignment.objects.get(
                         group=group,
