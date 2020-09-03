@@ -5,7 +5,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import user_passes_test
 from django.urls import URLPattern, path
-from django.views.decorators.cache import cache_page
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from . import admin_views, views
@@ -166,11 +165,6 @@ def old_patterns():
             name="teacher-assignments",
         ),
         path(
-            "teacher/<int:pk>/blinks/",
-            views.TeacherBlinks.as_view(),
-            name="teacher-blinks",
-        ),
-        path(
             "teacher/favourite",
             views.teacher_toggle_favourite,
             name="teacher-toggle-favourite",
@@ -275,78 +269,6 @@ def old_patterns():
             "access_denied_and_logout/",
             views.access_denied_and_logout,
             name="access_denied_and_logout",
-        ),
-        # Blink
-        path(
-            "blink/<int:pk>/",
-            views.BlinkQuestionFormView.as_view(),
-            name="blink-question",
-        ),
-        path(
-            "blink/<int:pk>/summary/",
-            views.BlinkQuestionDetailView.as_view(),
-            name="blink-summary",
-        ),
-        path("blink/<int:pk>/count/", views.blink_count, name="blink-count",),
-        path("blink/<int:pk>/close/", views.blink_close, name="blink-close",),
-        path(
-            "blink/<int:pk>/latest_results/",
-            views.blink_latest_results,
-            name="blink-results",
-        ),
-        path("blink/<int:pk>/reset/", views.blink_reset, name="blink-reset",),
-        path(
-            "blink/<int:pk>/status/", views.blink_status, name="blink-status",
-        ),
-        path(
-            "blink/<username>/",
-            views.blink_get_current,
-            name="blink-get-current",
-        ),
-        path(
-            "blink/<username>/url/",
-            cache_page(1)(views.blink_get_current_url),
-            name="blink-get-current-url",
-        ),
-        path(
-            "blink/<int:pk>/get_next/",
-            views.blink_get_next,
-            name="blink-get-next",
-        ),
-        path(
-            "blink/waiting/<username>/",
-            views.blink_waiting,
-            name="blink-waiting",
-        ),
-        path(
-            "blink/waiting/<username>/<int:assignment>/",
-            views.blink_waiting,
-            name="blink-waiting",
-        ),
-        path(
-            "blinkAssignment/create/",
-            views.BlinkAssignmentCreate.as_view(),
-            name="blinkAssignment-create",
-        ),
-        path(
-            "blinkAssignment/<int:pk>/delete/",
-            views.blink_assignment_delete,
-            name="blinkAssignment-delete",
-        ),
-        path(
-            "blinkAssignment/<int:pk>/set_time/",
-            views.blink_assignment_set_time,
-            name="blinkAssignment-set-time",
-        ),
-        path(
-            "blinkAssignment/<int:pk>/start/",
-            views.blink_assignment_start,
-            name="blinkAssignment-start",
-        ),
-        path(
-            "blinkAssignment/<int:pk>/update/",
-            views.BlinkAssignmentUpdate.as_view(),
-            name="blinkAssignment-update",
         ),
     ]
 

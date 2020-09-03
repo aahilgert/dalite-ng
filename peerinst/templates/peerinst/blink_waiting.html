@@ -13,9 +13,9 @@
     {% if user.teacher and assignment %}
     <h2 class="mdc-typography--display1 mdc-theme--secondary">{% trans 'Waiting for students' %}</h2>
 
-    <p class="m-bot-10">{% trans 'Student link' %}: <span class="bold">{{ request.get_host}}{% url 'blink-get-current' teacher.user.username %}</span></p>
+    <p class="m-bot-10">{% trans 'Student link' %}: <span class="bold">{{ request.get_host}}{% url 'blink:blink-get-current' teacher.user.username %}</span></p>
 
-    <form method="post" action="{% url 'blinkAssignment-set-time' assignment %}">
+    <form method="post" action="{% url 'blink:blinkAssignment-set-time' assignment %}">
       {% csrf_token %}
       {% for field in form %}
         <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--dense" data-mdc-auto-init="MDCTextField">
@@ -62,7 +62,7 @@ function processResponse(response, status, obj) {
 }
 
 function checkURL() {
-  $.get("{% url 'blink-get-current-url' username=teacher.user.username %}", processResponse);
+  $.get("{% url 'blink:blink-get-current-url' username=teacher.user.username %}", processResponse);
 }
 
 const status = window.setInterval(checkURL, 1000);

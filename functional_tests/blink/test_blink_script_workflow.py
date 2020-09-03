@@ -94,7 +94,7 @@ def test_blink_script(
 
     blink_url = "{}{}".format(
         browser.server_url,
-        reverse("blink-waiting", args=(teacher.user.username,)),
+        reverse("blink:blink-waiting", args=(teacher.user.username,)),
     )
     second_browser.get(blink_url)
     accept_cookies(second_browser)
