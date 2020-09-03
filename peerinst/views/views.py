@@ -2191,7 +2191,7 @@ class BlinkQuestionFormView(SingleObjectMixin, FormView):
         else:
             if self.object.active:
                 try:
-                    models.BlinkAnswer(
+                    BlinkAnswer(
                         question=self.object,
                         answer_choice=form.cleaned_data["first_answer_choice"],
                         vote_time=timezone.now(),
@@ -2254,6 +2254,7 @@ class BlinkQuestionFormView(SingleObjectMixin, FormView):
 class BlinkQuestionDetailView(DetailView):
 
     model = BlinkQuestion
+    template_name = "peerinst/blinkquestion_detail.html"
 
     def get(self, request, *args, **kwargs):
         # Check for an answer... teacher might have refreshed their page and
@@ -2363,7 +2364,7 @@ class BlinkQuestionDetailView(DetailView):
 def blink_assignment_set_time(request, pk):
 
     form = forms.BlinkSetTimeForm(request.POST)
-    blink_assignment = get_object_or_404(models.BlinkAssignment, key=pk)
+    blink_assignment = get_object_or_404(BlinkAssignment, key=pk)
     if form.is_valid():
         for blink_question in blink_assignment.blinkquestions.all():
             blink_question.time_limit = form.cleaned_data["time_limit"]
@@ -2975,6 +2976,7 @@ class BlinkAssignmentCreate(LoginRequiredMixin, CreateView):
 
     model = BlinkAssignment
     fields = ["title"]
+    template_name = "peerinst/blinkassignment_form.html"
 
     def form_valid(self, form):
         key = random.randrange(10000000, 99999999)
@@ -2996,6 +2998,7 @@ class BlinkAssignmentCreate(LoginRequiredMixin, CreateView):
 class BlinkAssignmentUpdate(LoginRequiredMixin, DetailView):
 
     model = BlinkAssignment
+    template_name = "peerinst/blinkassignment_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super(BlinkAssignmentUpdate, self).get_context_data(**kwargs)
