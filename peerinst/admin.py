@@ -7,13 +7,6 @@ from django.utils.html import escape, format_html
 from django.utils.translation import ugettext_lazy as _
 
 from . import models
-from blink.models import (
-    BlinkAnswer,
-    BlinkAssignment,
-    BlinkAssignmentQuestion,
-    BlinkQuestion,
-    BlinkRound,
-)
 from .models import (
     Answer,
     AnswerChoice,
@@ -290,31 +283,6 @@ class TeacherNotificationAdmin(admin.ModelAdmin):
 class LastLogoutAdmin(admin.ModelAdmin):
     list_display = ["user", "last_logout"]
     readonly_fields = ["user", "last_logout"]
-
-
-@admin.register(BlinkQuestion)
-class BlinkQuestionAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(BlinkRound)
-class BlinkRoundAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(BlinkAnswer)
-class BlinkAnswerAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(BlinkAssignment)
-class BlinkAssignmentAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(BlinkAssignmentQuestion)
-class BlinkAssignmentQuestionAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(Student)
