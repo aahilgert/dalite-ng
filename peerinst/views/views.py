@@ -60,14 +60,16 @@ from ..mixins import (
     teacher_tos_accepted_check,
 )
 from ..models import AnswerChoice  # LtiEvent,
-from ..models import (
-    Answer,
-    Assignment,
+from blink.models import (
     BlinkAnswer,
     BlinkAssignment,
     BlinkAssignmentQuestion,
     BlinkQuestion,
     BlinkRound,
+)
+from ..models import (
+    Answer,
+    Assignment,
     Category,
     Collection,
     Discipline,

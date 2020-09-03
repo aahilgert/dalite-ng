@@ -7,15 +7,17 @@ from django.utils.html import escape, format_html
 from django.utils.translation import ugettext_lazy as _
 
 from . import models
-from .models import (
-    Answer,
-    AnswerChoice,
-    Assignment,
+from blink.models import (
     BlinkAnswer,
     BlinkAssignment,
     BlinkAssignmentQuestion,
     BlinkQuestion,
     BlinkRound,
+)
+from .models import (
+    Answer,
+    AnswerChoice,
+    Assignment,
     Category,
     Collection,
     Discipline,

@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from .question import Question
-from .teacher import Teacher
+from peerinst.models import Question, Teacher
 
 
 class BlinkQuestion(models.Model):
@@ -138,7 +134,3 @@ class BlinkAssignmentQuestion(models.Model):
 
     class Meta:
         ordering = ["rank"]
-
-    # Reporting structure
-    # Front-end assignment making
-    # Sorting by label "easy, tricky, peer, hard"

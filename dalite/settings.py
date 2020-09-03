@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     "quality",
     "tos",
     "peerinst",
+    "blink",
     "REST",
     "cookielaw",
     "csp",

@@ -19,6 +19,7 @@ RUN mkdir static
 COPY requirements/requirements-prod-aws.txt requirements.txt
 RUN pip3 install -r requirements.txt
 COPY --from=static /code/analytics ./analytics
+COPY --from=static /code/blink ./blink
 COPY --from=static /code/dalite ./dalite
 COPY --from=static /code/locale ./locale
 COPY --from=static /code/peerinst ./peerinst

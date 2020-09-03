@@ -10,10 +10,12 @@ from django.forms import ModelForm
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from .models import (
-    Assignment,
+from blink.models import (
     BlinkAssignmentQuestion,
     BlinkQuestion,
+)
+from .models import (
+    Assignment,
     Category,
     Discipline,
     Question,

@@ -8,6 +8,7 @@ RUN mkdir static
 COPY requirements/requirements-dev.txt requirements.txt
 RUN pip3 install -r requirements.txt
 COPY ./analytics analytics
+COPY ./blink blink
 COPY ./dalite dalite
 COPY ./functional_tests functional_tests
 COPY ./locale locale
