@@ -21,7 +21,6 @@ from blink.models import (
     BlinkQuestion,
     BlinkRound,
 )
-
 from peerinst.mixins import LoginRequiredMixin
 from peerinst.models import Teacher
 
