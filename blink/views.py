@@ -47,7 +47,7 @@ def blink_assignment_delete(request, pk):
         else:
             return TemplateResponse(
                 request,
-                "peerinst/blink_error.html",
+                "blink/blink_error.html",
                 context={
                     "message": "Assignment does not belong to this teacher",
                     "url": reverse("teacher", kwargs={"pk": teacher.pk}),
@@ -57,7 +57,7 @@ def blink_assignment_delete(request, pk):
     except Exception:
         return TemplateResponse(
             request,
-            "peerinst/blink_error.html",
+            "blink/blink_error.html",
             context={"message": "Error", "url": reverse("logout")},
         )
 
@@ -98,7 +98,7 @@ def blink_assignment_start(request, pk):
         else:
             return TemplateResponse(
                 request,
-                "peerinst/blink_error.html",
+                "blink/blink_error.html",
                 context={
                     "message": "Assignment does not belong to this teacher",
                     "url": reverse("teacher", kwargs={"pk": teacher.pk}),
@@ -108,7 +108,7 @@ def blink_assignment_start(request, pk):
     except Exception:
         return TemplateResponse(
             request,
-            "peerinst/blink_error.html",
+            "blink/blink_error.html",
             context={"message": "Error", "url": reverse("logout")},
         )
 
@@ -363,7 +363,7 @@ def blink_waiting(request, username, assignment=""):
 
     return TemplateResponse(
         request,
-        "peerinst/blink_waiting.html",
+        "blink/blink_waiting.html",
         context={
             "assignment": assignment,
             "teacher": teacher,
@@ -376,7 +376,7 @@ class BlinkAssignmentCreate(LoginRequiredMixin, CreateView):
 
     model = BlinkAssignment
     fields = ["title"]
-    template_name = "peerinst/blinkassignment_form.html"
+    template_name = "blink/blinkassignment_form.html"
 
     def form_valid(self, form):
         key = random.randrange(10000000, 99999999)
@@ -398,7 +398,7 @@ class BlinkAssignmentCreate(LoginRequiredMixin, CreateView):
 class BlinkAssignmentUpdate(LoginRequiredMixin, DetailView):
 
     model = BlinkAssignment
-    template_name = "peerinst/blinkassignment_detail.html"
+    template_name = "blink/blinkassignment_detail.html"
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -499,7 +499,7 @@ class BlinkAssignmentUpdate(LoginRequiredMixin, DetailView):
 class BlinkQuestionDetailView(DetailView):
 
     model = BlinkQuestion
-    template_name = "peerinst/blinkquestion_detail.html"
+    template_name = "blink/blinkquestion_detail.html"
 
     def get(self, request, *args, **kwargs):
         # Check for an answer... teacher might have refreshed their page and
@@ -607,7 +607,7 @@ class BlinkQuestionDetailView(DetailView):
 class BlinkQuestionFormView(SingleObjectMixin, FormView):
 
     form_class = forms.BlinkAnswerForm
-    template_name = "peerinst/blink.html"
+    template_name = "blink/blink.html"
     model = BlinkQuestion
 
     def form_valid(self, form):
@@ -620,7 +620,7 @@ class BlinkQuestionFormView(SingleObjectMixin, FormView):
         except Exception:
             return TemplateResponse(
                 self.request,
-                "peerinst/blink_error.html",
+                "blink/blink_error.html",
                 context={
                     "message": "Voting is closed",
                     "url": reverse(
@@ -635,7 +635,7 @@ class BlinkQuestionFormView(SingleObjectMixin, FormView):
         ):
             return TemplateResponse(
                 self.request,
-                "peerinst/blink_error.html",
+                "blink/blink_error.html",
                 context={
                     "message": "You may only vote once",
                     "url": reverse(
@@ -662,7 +662,7 @@ class BlinkQuestionFormView(SingleObjectMixin, FormView):
                 except Exception:
                     return TemplateResponse(
                         self.request,
-                        "peerinst/blink_error.html",
+                        "blink/blink_error.html",
                         context={
                             "message": "Error; try voting again",
                             "url": reverse(
@@ -676,7 +676,7 @@ class BlinkQuestionFormView(SingleObjectMixin, FormView):
             else:
                 return TemplateResponse(
                     self.request,
-                    "peerinst/blink_error.html",
+                    "blink/blink_error.html",
                     context={
                         "message": "Voting is closed",
                         "url": reverse(
