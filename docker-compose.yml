@@ -22,8 +22,22 @@ services:
     environment:
       DALITE_DB_HOST: host.docker.internal
       DALITE_DB_NAME: dalite_ng
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     volumes:
       - static:/code/static
+
+  celery:
+    image: mydalite
+    command: celery -A dalite worker -l debug
+    environment:
+      DALITE_DB_HOST: host.docker.internal
+      DALITE_DB_NAME: dalite_ng
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+
+  redis:
+    image: redis:5.0
 
   test_app:
     image: mydalite
@@ -32,6 +46,8 @@ services:
       ALLOWED_HOST: nginx
       DALITE_DB_HOST: host.docker.internal
       DALITE_DB_NAME: test_dalite_ng
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     volumes:
       - static:/code/static
 
