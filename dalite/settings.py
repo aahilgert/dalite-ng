@@ -176,6 +176,14 @@ COMPRESS_URL = STATIC_URL
 COMPRESS_ROOT = STATIC_ROOT
 
 
+# Email
+# - Ensure default is console backend
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "emails")
+
+
 # LOGIN_URL = 'login'
 LOGIN_URL = "login"
 
