@@ -1,3 +1,4 @@
+-r ../blink/requirements.txt
 -r ../REST/requirements.txt
 
 bleach

@@ -30,6 +30,7 @@ INSTALLED_APPS = (
     "tos",
     "peerinst",
     "blink",
+    "channels",
     "REST",
     "cookielaw",
     "csp",
@@ -186,6 +187,10 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ]
 }
+
+
+# Channels
+ASGI_APPLICATION = "dalite.routing.application"
 
 
 # Axes
