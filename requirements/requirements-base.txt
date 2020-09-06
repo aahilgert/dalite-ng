@@ -9,8 +9,10 @@
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys  # via -r requirements/requirements-base.in
 -e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums  # via -r requirements/requirements-base.in
 -e git+https://github.com/SALTISES4/UserFeedback@master#egg=user_feedback  # via -r requirements/requirements-base.in
+aioredis==1.3.1           # via -r requirements/../blink/requirements.txt, channels-redis
 amqp==2.5.2               # via kombu
-asgiref==3.2.10           # via -r requirements/../blink/requirements.txt, channels, daphne
+asgiref==3.2.10           # via -r requirements/../blink/requirements.txt, channels, channels-redis, daphne
+async-timeout==3.0.1      # via -r requirements/../blink/requirements.txt, aioredis
 attrs==20.2.0             # via -r requirements/../blink/requirements.txt, automat, service-identity, twisted
 autobahn==20.7.1          # via -r requirements/../blink/requirements.txt, daphne
 automat==20.2.0           # via -r requirements/../blink/requirements.txt, twisted
@@ -20,7 +22,8 @@ bleach==3.1.4             # via -r requirements/requirements-base.in
 celery[redis]==4.4.0      # via -r requirements/requirements-base.in, django-celery-beat
 certifi==2019.11.28       # via requests
 cffi==1.14.2              # via -r requirements/../blink/requirements.txt, cryptography
-channels==2.4.0           # via -r requirements/../blink/requirements.txt
+channels-redis==3.1.0     # via -r requirements/../blink/requirements.txt
+channels==2.4.0           # via -r requirements/../blink/requirements.txt, channels-redis
 chardet==3.0.4            # via requests
 constantly==15.1.0        # via -r requirements/../blink/requirements.txt, twisted
 cryptography==3.1         # via -r requirements/../blink/requirements.txt, autobahn, pyopenssl, service-identity
@@ -44,6 +47,7 @@ django-timezone-field==4.0  # via django-celery-beat
 django==2.2.16            # via -r requirements/../blink/requirements.txt, -r requirements/requirements-base.in, channels, django-analytical, django-appconf, django-axes, django-celery-beat, django-classy-tags, django-cookie-law, django-csp, django-lti-tool-provider, django-security-headers, django-sslserver, django-timezone-field, djangorestframework, jsonfield, pinax-forums
 djangorestframework==3.11.0  # via -r requirements/../REST/requirements.txt, -r requirements/requirements-base.in
 filetype==1.0.5           # via pinax-forums
+hiredis==1.1.0            # via -r requirements/../blink/requirements.txt, aioredis
 html5lib==1.0.1           # via django-htmlmin
 hyperlink==20.0.1         # via -r requirements/../blink/requirements.txt, twisted
 idna==2.10                # via -r requirements/../blink/requirements.txt, hyperlink, requests, twisted
@@ -52,6 +56,7 @@ jsonfield==3.1.0          # via django-lti-tool-provider
 kombu==4.6.7              # via celery
 lti==0.9.4                # via django-lti-tool-provider
 lxml==4.5.0               # via lti
+msgpack==1.0.0            # via -r requirements/../blink/requirements.txt, channels-redis
 mysqlclient==1.4.6        # via -r requirements/requirements-base.in
 numpy==1.18.1             # via pandas
 oauthlib==3.1.0           # via django-lti-tool-provider, lti, requests-oauthlib
