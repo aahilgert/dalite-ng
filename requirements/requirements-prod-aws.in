@@ -5,3 +5,4 @@ sentry-sdk
 boto3
 gunicorn
 watchtower
+django-ses

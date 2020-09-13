@@ -11,6 +11,12 @@
   {% endif %}
 </h2>
 
+{% if request.session.assignment_id %}
+<div class="admin-link">
+  <a href="{% url 'research-assignment-question-index-by-assignment' assignment_id=request.session.assignment_id %}">Back to Quality Control</a>
+</div>
+{% endif %}
+
 <div class='field-container'>
   <div class='number-box' title="{% trans 'What might a confused student say to justify these answer choices?' %}">
   <span class='number'>?</span></div>
