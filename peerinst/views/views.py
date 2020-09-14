@@ -1851,7 +1851,7 @@ class TeacherAssignments(TeacherBase, ListView):
     def get_queryset(self):
         self.teacher = get_object_or_404(Teacher, user=self.request.user)
         return Assignment.objects.annotate(
-            n_questions=Count("assignmentquestions")
+            n_questions=Count("assignmentquestions", distinct=True)
         )
 
     def get_context_data(self, **kwargs):
@@ -1861,12 +1861,14 @@ class TeacherAssignments(TeacherBase, ListView):
         context["owned_assignments"] = (
             self.get_queryset()
             .filter(owner=self.teacher.user)
+            .annotate(n_answers=Count("answer"))
             .order_by("-created_on")
         )
 
         context["followed_assignments"] = (
             self.teacher.assignments.exclude(owner=self.teacher.user)
-            .annotate(n_questions=Count("assignmentquestions"))
+            .annotate(n_questions=Count("assignmentquestions", distinct=True))
+            .annotate(n_answers=Count("answer"))
             .order_by("-created_on")
         )
 

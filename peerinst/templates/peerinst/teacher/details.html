@@ -89,6 +89,15 @@
             <span class="mdc-list-item__text mdc-theme--secondary bold">
               <a class="mdc-theme--secondary" href="{% url 'question-list' a.pk %}">{{ a.identifier }}</a>
               <span class="mdc-list-item__secondary-text">
+
+                {% if a.includes_flagged_question %}
+                <a href="{% url 'research-assignment-question-index-by-assignment' assignment_id=a.identifier %}">
+                  <i class="material-icons md-24 mdc-ripple-surface icon-list red" title="{% trans 'Contains problematic question' %}">
+                    error
+                  </i>
+                </a>
+                {% endif %}
+
                 {{ a.questions.count }} {% trans "questions" %}, {{ a.answer_set.count }} {% trans "answers" %}
               </span>
             </span>

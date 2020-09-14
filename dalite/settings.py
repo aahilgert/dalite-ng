@@ -480,6 +480,7 @@ CSP_OBJECT_SRC = [
     "phet.colorado.edu",
     "*.youtube.com",
     "*.vimeo.com",
+    "docs.google.com",
 ]
 
 FEATURE_POLICY = [

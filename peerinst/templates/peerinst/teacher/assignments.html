@@ -33,7 +33,8 @@
         <span class="mdc-list-item__text mdc-theme--secondary bold">
           {{ a.identifier }}
           <span class="mdc-list-item__secondary-text">
-            {{ a.n_questions }} {% trans "questions" %}
+            {{ a.n_questions }} {% trans "questions" %};
+            {{ a.n_answers }} {% trans "answers" %}
           </span>
         </span>
         <span class="mdc-list-item__meta">
@@ -72,7 +73,8 @@
         <span class="mdc-list-item__text mdc-theme--secondary bold">
           {{ g.identifier }}
           <span class="mdc-list-item__secondary-text">
-            {{ g.n_questions }} {% trans "questions" %}
+            {{ g.n_questions }} {% trans "questions" %};
+            {{ g.n_answers }} {% trans "answers" %}
           </span>
         </span>
         <span class="mdc-list-item__meta">
@@ -113,7 +115,8 @@
         <span class="mdc-list-item__text mdc-theme--secondary bold">
           {{ g.identifier }}
           <span class="mdc-list-item__secondary-text">
-            {{ g.n_questions }} {% trans "questions" %}
+            {{ g.questions.count }} {% trans "questions" %};
+            {{ g.n_answers }} {% trans "answers" %}
           </span>
         </span>
       </li>
