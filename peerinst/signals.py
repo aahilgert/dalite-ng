@@ -19,10 +19,6 @@ from .models import (
 
 @receiver(request_started)
 def logger_signal(sender, environ=None, scope=None, **kwargs):
-    print(sender)
-    print(environ)
-    print(scope)
-
     # TODO: Update logger to operate in wsgi or asgi modes
 
     if environ and "HTTP_USER_AGENT" in environ:
