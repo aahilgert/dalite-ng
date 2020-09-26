@@ -267,8 +267,7 @@ class SignUpForm(ModelForm):
 
     The clean method is overridden to add basic password validation."""
 
-    email = forms.CharField(label=_("Email address"))
-    username = forms.CharField(label=_("Username"))
+    email = forms.EmailField()
 
     url = forms.URLField(
         label=_("Website"),
