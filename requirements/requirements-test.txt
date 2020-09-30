@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements/requirements-test.in
 #
--e git+https://github.com/SALTISES4/CourseFlow#egg=CourseFlow  # via -r requirements/requirements-base.txt
+-e git+https://github.com/SALTISES4/CourseFlow@6d49e6a182c8f963c2fb593d14fe2ea467206c7f#egg=CourseFlow  # via -r requirements/requirements-base.txt
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider  # via -r requirements/requirements-base.txt
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys  # via -r requirements/requirements-base.txt
 -e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums  # via -r requirements/requirements-base.txt
