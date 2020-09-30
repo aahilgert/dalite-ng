@@ -9,6 +9,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from functional_tests.fixtures import *  # noqa
 
 
+MAX_WAIT = 30
+
+
 def accept_cookies(browser):
     browser.find_element_by_id("accept-cookies").click()
 
@@ -18,8 +21,10 @@ def go_to_account(browser):
     icon.click()
 
     try:
-        account_button = WebDriverWait(browser, 5).until(
-            EC.element_to_be_clickable((By.LINK_TEXT, "My account"))
+        account_button = WebDriverWait(browser, MAX_WAIT).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//i[contains(text(), 'account_circle')]")
+            )
         )
         time.sleep(1)
         account_button.click()

@@ -61,10 +61,10 @@
 {{ block.super }}
 <script nonce="{{ request.csp_nonce }}">
 function reset(){
-  window.location = "{% url 'blink-reset' pk=object.pk %}"
+  window.location = "{% url 'blink:blink-reset' pk=object.pk %}"
 }
 function next(){
-  window.location = "{% url 'blink-get-next' pk=object.pk %}"
+  window.location = "{% url 'blink:blink-get-next' pk=object.pk %}"
 }
 
 const csrftoken = bundle.getCsrfToken();
@@ -98,7 +98,7 @@ function set_counter(json) {
 
 // Schedule AJAX event
 {% if request.user.is_authenticated %}
-const counterID = window.setInterval(get,1000,"{% url 'blink-count' pk=object.pk %}", set_counter);
+const counterID = window.setInterval(get,1000,"{% url 'blink:blink-count' pk=object.pk %}", set_counter);
 {% endif %}
 
 // Countdown
@@ -162,7 +162,7 @@ function getResponse(response) {
 }
 
 function getResults(response) {
-  get("{% url 'blink-results' pk=object.pk %}",showResults);
+  get("{% url 'blink:blink-results' pk=object.pk %}",showResults);
   return;
 }
 
@@ -182,7 +182,7 @@ function update_time(){
       bundle.select("#next_button").style('display','inline');
       // Close the question if authenticated, otherwise get results and start checking for redirect
       if ({{request.user.is_authenticated|yesno:"true,false"}}){
-        changeQuestionState("{% url 'blink-close' pk=object.pk %}",false,getResults);
+        changeQuestionState("{% url 'blink:blink-close' pk=object.pk %}",false,getResults);
       }
       else {
         function processStatus(response) {
@@ -203,11 +203,11 @@ function update_time(){
                 if (action == "stop") {
                   clearInterval(checkURLID);
                   // Back to waiting room
-                  window.location = "{% url 'blink-waiting' username=teacher %}"
+                  window.location = "{% url 'blink:blink-waiting' username=teacher %}"
                 }
                 return;
               }
-              get("{% url 'blink-get-current-url' username=teacher %}",compare);
+              get("{% url 'blink:blink-get-current-url' username=teacher %}",compare);
               return;
             }
             var checkURLID = window.setInterval(checkRedirect,1000);
@@ -216,7 +216,7 @@ function update_time(){
         }
         function blinkStatus() {
           console.info("Checking status of poll");
-          get("{% url 'blink-status' pk=object.pk %}",processStatus);
+          get("{% url 'blink:blink-status' pk=object.pk %}",processStatus);
         }
         // Check round is closed
         var checkID = window.setInterval(blinkStatus,1000);

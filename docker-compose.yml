@@ -18,20 +18,40 @@ services:
   live_app:
     build: .
     image: mydalite
-    command: gunicorn dalite.wsgi:application --bind 0.0.0.0:8000
+    command: daphne -b 0.0.0.0 -p 8000 dalite.asgi:application
     environment:
-      DALITE_DB_HOST: host.docker.internal
+      DALITE_DB_HOST: ${HOST:-host.docker.internal}
       DALITE_DB_NAME: dalite_ng
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      CHANNELS_REDIS_ADDRESS: redis
+      CHANNELS_REDIS_PORT: 6379
     volumes:
       - static:/code/static
 
+  celery:
+    image: mydalite
+    command: celery -A dalite worker -l debug
+    environment:
+      DALITE_DB_HOST: ${HOST:-host.docker.internal}
+      DALITE_DB_NAME: dalite_ng
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+
+  redis:
+    image: redis:5.0
+
   test_app:
     image: mydalite
-    command: gunicorn dalite.wsgi:application --bind 0.0.0.0:8000
+    command: daphne -b 0.0.0.0 -p 8000 dalite.asgi:application
     environment:
       ALLOWED_HOST: nginx
-      DALITE_DB_HOST: host.docker.internal
+      DALITE_DB_HOST: ${HOST:-host.docker.internal}
       DALITE_DB_NAME: test_dalite_ng
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      CHANNELS_REDIS_ADDRESS: redis
+      CHANNELS_REDIS_PORT: 6379
     volumes:
       - static:/code/static
 
@@ -68,6 +88,8 @@ services:
       - HUB_PORT=4444
       - NODE_MAX_INSTANCES=4
       - NODE_MAX_SESSION=2
+      - SCREEN_WIDTH=2732
+      - SCREEN_HEIGHT=1536
     ports:
       - 41960:5900
 
@@ -82,18 +104,20 @@ services:
       - HUB_PORT=4444
       - NODE_MAX_INSTANCES=4
       - NODE_MAX_SESSION=2
+      - SCREEN_WIDTH=2732
+      - SCREEN_HEIGHT=1536
 
   test:
     build:
       context: .
       dockerfile: ./functional_tests/Dockerfile
-    command: pytest functional_tests --create-db --ignore=node_modules/ -vvv -s
+    command: pytest functional_tests --create-db --ignore=node_modules/ -vvv -s -k 'test_blink_script'
     depends_on:
       - selenium-hub
       - chrome
       - firefox
     environment:
-      DALITE_DB_HOST: host.docker.internal
+      DALITE_DB_HOST: ${HOST:-host.docker.internal}
       STAGING_SERVER: nginx:8080
       SELENIUM_HUB: selenium-hub:4444
       DJANGO_SETTINGS_MODULE: dalite.test_settings

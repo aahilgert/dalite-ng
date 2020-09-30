@@ -1,14 +1,16 @@
 from random import shuffle
 
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 from django.test import TestCase
 
-from django.contrib.auth.models import User
-from ..models import (
-    Question,
+from blink.models import (
     BlinkQuestion,
     BlinkAssignment,
     BlinkAssignmentQuestion,
+)
+from peerinst.models import (
+    Question,
     Teacher,
 )
 

@@ -29,6 +29,8 @@ INSTALLED_APPS = (
     "quality",
     "tos",
     "peerinst",
+    "blink",
+    "channels",
     "REST",
     "cookielaw",
     "csp",
@@ -174,6 +176,14 @@ COMPRESS_URL = STATIC_URL
 COMPRESS_ROOT = STATIC_ROOT
 
 
+# Email
+# - Ensure default is console backend
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "emails")
+
+
 # LOGIN_URL = 'login'
 LOGIN_URL = "login"
 
@@ -184,6 +194,23 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ]
+}
+
+
+# Channels
+ASGI_APPLICATION = "dalite.routing.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                (
+                    os.environ.get("CHANNELS_REDIS_ADDRESS", "127.0.0.1"),
+                    os.environ.get("CHANNELS_REDIS_PORT", 6379),
+                )
+            ],
+        },
+    },
 }
 
 
@@ -409,6 +436,12 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_ACKS_LATE = True
 CELERYD_PREFETCH_MULTIPLIER = 1
+CELERY_BROKER_URL = os.environ.get(
+    "CELERY_BROKER_URL", "redis://localhost:6379/0"
+)
+CELERY_RESULT_BACKEND = os.environ.get(
+    "CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
+)
 
 # CSP
 CSP_DEFAULT_SRC = ["'self'", "*.mydalite.org"]

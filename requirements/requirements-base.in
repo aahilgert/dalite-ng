@@ -1,3 +1,4 @@
+-r ../blink/requirements.txt
 -r ../REST/requirements.txt
 
 bleach
@@ -27,5 +28,5 @@ django-samesite-none
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys
 -e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums
--e git+https://github.com/SALTISES4/CourseFlow#egg=CourseFlow
+-e git+https://github.com/SALTISES4/CourseFlow@6d49e6a182c8f963c2fb593d14fe2ea467206c7f#egg=CourseFlow
 -e git+https://github.com/SALTISES4/UserFeedback@master#egg=user_feedback

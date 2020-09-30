@@ -12,7 +12,6 @@ __all__ = [
 from .admin import NewUserRequest, UserType, UserUrl
 from .answer import *  # noqa
 from .assignment import *  # noqa
-from .blink import *  # noqa
 from .collection import *  # noqa
 from .course_flow import *  # noqa
 from .lti import *  # noqa
