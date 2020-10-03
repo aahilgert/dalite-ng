@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     "analytical",
     "pinax.forums",
     "axes",
+    "django_inlinecss",
 )
 
 MIDDLEWARE = (

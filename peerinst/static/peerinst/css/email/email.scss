@@ -1,0 +1,76 @@
+@import "../variables";
+
+body {
+  background-color: $mdc-theme-background;
+  color: $mdc-theme-secondary;
+  font-family: $mdc-typography-font-family;
+  font-size: 10pt;
+  margin: 0px auto;
+  max-width: 440px;
+}
+h1 {
+  color: $mdc-theme-primary;
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 10px 0px;
+}
+h2 {
+  font-size: 1rem;
+  padding-bottom: 40px;
+}
+h3 {
+  font-size: 1rem;
+  padding-bottom: 20px;
+}
+a {
+  color: $mdc-theme-primary;
+  &:visited {
+    color: $mdc-theme-primary;
+  }
+}
+table.btn {
+  border: 0px;
+  border-collapse: collapse;
+  margin: 30px auto;
+  & td {
+    background-color: $mdc-theme-primary;
+    border-radius: 2px;
+    padding: 10px 14px;
+    & a {
+      color: #ffffff;
+      display: block;
+      font-weight: bold;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+  }
+}
+.header {
+  background-color: $mdc-theme-secondary;
+  background-image: linear-gradient(
+    90deg,
+    $mdc-theme-primary 0%,
+    $mdc-theme-secondary 100%
+  );
+  padding: 4pt;
+  position: relative;
+}
+.footer {
+  color: black;
+  font-size: 8px;
+  padding: 10px 20px;
+  & table {
+    border-collapse: collapse;
+  }
+}
+.fine-print {
+  font-size: x-small;
+}
+#content {
+  padding: 10px 20px;
+}
+#logo {
+  padding-right: 4pt;
+  vertical-align: middle;
+  width: 40px;
+}
