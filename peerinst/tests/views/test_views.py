@@ -1,5 +1,7 @@
 import json
 import random
+import pytest
+
 from datetime import datetime
 
 import ddt
@@ -729,6 +731,7 @@ def test_signup__post(client, mocker):
     mail_managers.assert_called_once()
 
 
+@pytest.mark.skip
 def test_signup__backend_missing(client, mocker):
     data = {"username": "test", "email": "test@test.com", "url": "test.com"}
     settings = mocker.patch("peerinst.views.views.settings")

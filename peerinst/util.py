@@ -483,7 +483,9 @@ def get_correct_answer_choices(question):
     return correct_answer_choices
 
 
-def report_data_by_assignment(assignment_list, student_groups, teacher):
+def report_data_by_assignment(
+    assignment_list, student_groups, teacher, group_school_id_needed=False
+):
     """
     Returns data for report by assignment
 
@@ -545,7 +547,7 @@ def report_data_by_assignment(assignment_list, student_groups, teacher):
         }
     ]
     """
-    from peerinst.models import Answer, Assignment
+    from peerinst.models import Answer, Assignment, StudentGroupMembership
 
     student_obj_qs = get_student_objects_from_group_list(student_groups)
     answer_qs = subset_answers_by_studentgroup_and_assignment(
@@ -762,6 +764,14 @@ def report_data_by_assignment(assignment_list, student_groups, teacher):
                     student__username=student_response.user_token
                 ).student.email.split("@")[0]
 
+                if group_school_id_needed:
+                    d_q_a["student_id"] = StudentGroupMembership.objects.get(
+                        group=student_groups[0],
+                        student=student_obj_qs.get(
+                            student__username=student_response.user_token
+                        ),
+                    ).student_school_id
+
                 d_q_a["first_answer_choice"] = list(string.ascii_uppercase)[
                     student_response.first_answer_choice - 1
                 ]
@@ -782,7 +792,11 @@ def report_data_by_assignment(assignment_list, student_groups, teacher):
                     ).rationale
                 else:
                     d_q_a["chosen_rationale"] = "Stick to my own rationale"
-                d_q_a["submitted"] = student_response.datetime_second
+
+                if q.type == "RO":
+                    d_q_a["submitted"] = student_response.datetime_first
+                else:
+                    d_q_a["submitted"] = student_response.datetime_second
 
                 if q.sequential_review:
                     d_q_a["upvotes"] = student_response.upvotes
@@ -827,6 +841,7 @@ def report_data_transitions_dict(assignment_list, student_groups):
             "first_answer_choice",
             "second_answer_choice",
         )
+    print(student_transitions_by_q)
     return student_transitions_by_q
 
 
@@ -902,8 +917,7 @@ def report_data_by_student(assignment_list, student_groups):
                 ]
 
             except KeyError as e:
-                print(e)
-                d_g[question] = "-"
+                d_g[question] = "r-"
 
         gradebook_student.append(d_g)
     return gradebook_student

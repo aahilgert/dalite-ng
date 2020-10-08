@@ -183,7 +183,11 @@
             <li role="separator" class="mdc-list-divider list-item-question-{{ q.pk }}"></li>
             <li class="mdc-list-item list-item-question-{{ q.pk }}">
               <span class="mdc-list-item__graphic">
+              {% if q.type == "RO" %}
+                <i class="mdc-theme--primary material-icons md-48">chat</i>
+              {% else %}
                   <i class="mdc-theme--primary material-icons md-48">question_answer</i>
+              {% endif %}
               </span>
               <span class="mdc-list-item__text mdc-theme--secondary bold">
                 {{ q.pk }}: {{q.title|safe|striptags}}

@@ -199,6 +199,10 @@ https://datatables.net/extensions/buttons/examples/styling/jqueryui.html
                   <tr>
                       <th>{% trans "Student" %}</th>
 
+                      {% if group_school_id_needed %}
+                        <th>{% trans "Student ID" %}</th>
+                      {% endif %}
+
                       {% if question.type == "PI" %}
                         <th>{% trans "1st Ans" %}</th>
                       {% endif %}
@@ -228,6 +232,11 @@ https://datatables.net/extensions/buttons/examples/styling/jqueryui.html
                       data-score="{{ student_response.score }}">
                       <th id="{{student_response.student}}{{ question.title|safe }}" class="mdc-ripple-surface">
                           <a href="#{{ student_response.student }}">{{ student_response.student }}</a></th>
+
+                      {% if group_school_id_needed %}
+                        <td>{{ student_response.student_id }}</td>
+                      {% endif %}
+
                       {% if question.type == "PI" %}
                         <td>{{ student_response.first_answer_choice }}</td>
                       {% endif %}

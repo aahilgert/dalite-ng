@@ -191,12 +191,6 @@ def sign_up(request):
             form.save()
             # Notify administrators
 
-            #  print(settings.EMAIL_BACKEND)
-            if not settings.EMAIL_BACKEND.startswith(
-                "django.core.mail.backends"
-            ):
-                return HttpResponse(status=503)
-
             # TODO Adapt to different types of user
             NewUserRequest.objects.create(
                 user=form.instance, type=UserType.objects.get(type="teacher")
@@ -558,6 +552,8 @@ class QuestionCloneView(QuestionCreateView):
         form.instance.parent = get_object_or_404(
             models.Question, pk=self.kwargs["pk"]
         )
+        if form.instance.type == "RO":
+            form.instance.second_answer_needed = False
         return super(QuestionCloneView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -2445,13 +2441,19 @@ def report(request, assignment_id="", group_id=""):
             "identifier", flat=True
         )
 
+    group_school_id_needed = any(
+        StudentGroup.objects.filter(pk__in=student_groups).values_list(
+            "student_id_needed", flat=True
+        )
+    )
+
     assignment_data = report_data_by_assignment(
-        assignment_list, student_groups, teacher
+        assignment_list, student_groups, teacher, group_school_id_needed
     )
 
     context = {}
     context["data"] = assignment_data
-
+    context["group_school_id_needed"] = group_school_id_needed
     ######
     # for aggregate gradebook over all assignments
 
