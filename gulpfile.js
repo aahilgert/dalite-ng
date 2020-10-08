@@ -51,6 +51,7 @@ const styleBuilds = [
       "search",
       "landing_page",
       "tiny",
+      "email",
     ],
   },
   {

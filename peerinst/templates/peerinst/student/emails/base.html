@@ -1,55 +1,43 @@
+{% load i18n inlinecss %}
+
 <head>
-  <style nonce="{{ request.csp_nonce }}">
-  body {
-    background-color: #f4f4f4;
-    padding: 10 20pt;
-    font-family: 'Helvetica', sans-serif;
-    font-weight: 300;
-    font-size: 11pt;
-    color: #004266;
-  }
-  h1 {
-    font-size:2.5rem;
-    color: #54c0db;
-  }
-  h2 {
-    font-size:1rem;
-    color: inherit;
-    padding-bottom: 40px;
-  }
-  h3 {
-    font-size:1rem;
-    color: inherit;
-    padding-bottom: 20px;
-  }
-  a {
-    color: inherit;
-  }
-  .email-btn {
-    color: white;
-    text-decoration: none;
-    background-color: #54c0db;
-    padding: 20px 50px;
-    border-radius: 5px;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  .backup-link {
-    margin-top: 200px;
-    opacity: 0.75;
-  }
-  p {
-    color: inherit;
-  }
-  .p-email-btn {
-    display: flex
-    flex-direction: column;
-    margin: 50px auto;
-    width: 250px;
-  }
-  </style>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet" type="text/css">
 </head>
 
+{% inlinecss 'peerinst/css/email.min.css' %}
+
 <body>
-  {% block body %}{% endblock %}
+  <header>
+    <div class="header">
+    <img src="https://static.mydalite.org/peerinst/img/SALTISE-favicon.gif"
+         alt="myDALITE logo"
+         id="logo">
+    </div>
+  </header>
+
+  <div id="content">
+    {% block body %}{% endblock %}
+
+    <p>
+      {% trans "Don't want to receive these emails anymore?  You can toggle notifications for any group by logging in to your dashboard and clicking the notifications icon.  You can also remove yourself from any group for which you have registered." %}
+    </p>
+  </div>
+
+
+  <footer>
+    <div class="footer">
+      <table role="presentation">
+        <tbody>
+          <tr>
+            <td>{% trans 'myDALITE by SALTISE/S4' %}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Copyright' %} {% now  'Y' %}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </footer>
 </body>
+
+{% endinlinecss %}

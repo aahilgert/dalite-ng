@@ -10,6 +10,7 @@ django-compressor>=2.3
 django-cookie-law
 django-grappelli
 django-htmlmin
+django-inlinecss
 django-ipware==2.1.0  # Temporary pin awaiting django-axes fix
 django<3.0.0
 mysqlclient
@@ -24,6 +25,7 @@ packaging
 djangorestframework
 pandas
 django-samesite-none
+urllib3>1.25.8  # Reqd by safety
 
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys

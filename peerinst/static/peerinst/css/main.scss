@@ -17,6 +17,10 @@
   --mdc-theme-secondary: #{$mdc-theme-secondary};
 }
 
+/*
+User feedback app; this can be factored out to its own file and loaded
+last to avoid need for !important
+*/
 #user-feedback-component {
   & .mdc-icon-button:after {
     background-color: white !important;
