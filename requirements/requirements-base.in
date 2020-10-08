@@ -31,4 +31,4 @@ urllib3>1.25.8  # Reqd by safety
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys
 -e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums
 -e git+https://github.com/SALTISES4/CourseFlow@6d49e6a182c8f963c2fb593d14fe2ea467206c7f#egg=CourseFlow
--e git+https://github.com/SALTISES4/UserFeedback@9d51693513aa67f017d7ae783d297236049a6906#egg=user_feedback
+-e git+https://github.com/SALTISES4/UserFeedback@55845e1f322f13271c0f38feb345683e6c3c9a55#egg=user_feedback

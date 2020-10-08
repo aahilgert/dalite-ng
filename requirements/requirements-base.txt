@@ -8,7 +8,7 @@
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider  # via -r requirements/requirements-base.in
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys  # via -r requirements/requirements-base.in
 -e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums  # via -r requirements/requirements-base.in
--e git+https://github.com/SALTISES4/UserFeedback@9d51693513aa67f017d7ae783d297236049a6906#egg=user_feedback  # via -r requirements/requirements-base.in
+-e git+https://github.com/SALTISES4/UserFeedback@55845e1f322f13271c0f38feb345683e6c3c9a55#egg=user_feedback  # via -r requirements/requirements-base.in
 aioredis==1.3.1           # via -r requirements/../blink/requirements.txt, channels-redis
 amqp==2.5.2               # via kombu
 asgiref==3.2.10           # via -r requirements/../blink/requirements.txt, channels, channels-redis, daphne
