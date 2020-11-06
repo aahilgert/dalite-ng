@@ -22,6 +22,9 @@ User feedback app; this can be factored out to its own file and loaded
 last to avoid need for !important
 */
 #user-feedback-component {
+  & .mdc-icon-button {
+    transform: translate(6px, -3px);
+  }
   & .mdc-icon-button:after {
     background-color: white !important;
   }
