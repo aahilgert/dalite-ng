@@ -31,6 +31,21 @@ last to avoid need for !important
   & .mdc-icon-button:before {
     background-color: white !important;
   }
+  & .mdc-icon-button:hover:before {
+    opacity: 0.25 !important;
+  }
+  & .mdc-icon-button.mdc-ripple-upgraded:before {
+    height: 25px!important;
+    left: 12px!important;
+    top: 12px!important;
+    width: 25px!important;
+  }
+  & .mdc-icon-button.mdc-ripple-upgraded:after {
+    height: 25px!important;
+    left: 12px!important;
+    top: 12px!important;
+    width: 25px!important;
+  }
   & .mdc-icon-button__icon {
     vertical-align: baseline;
   }
