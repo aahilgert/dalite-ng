@@ -22,13 +22,14 @@ pytz
 requests
 django-security-headers>=0.3
 packaging
-djangorestframework
+djangorestframework>=3.11.2  # Reqd by safety
 pandas
 django-samesite-none
-urllib3>1.25.8  # Reqd by safety
+urllib3 > 1.25.8  # Reqd by safety
+lxml >= 4.6.1  # Reqd by safety
 
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys
 -e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums
 -e git+https://github.com/SALTISES4/CourseFlow@6d49e6a182c8f963c2fb593d14fe2ea467206c7f#egg=CourseFlow
--e git+https://github.com/SALTISES4/UserFeedback@55845e1f322f13271c0f38feb345683e6c3c9a55#egg=user_feedback
+-e git+https://github.com/SALTISES4/UserFeedback@8b25b254ac30a823a500edf7ed60ed1abee32cc6#egg=user_feedback
