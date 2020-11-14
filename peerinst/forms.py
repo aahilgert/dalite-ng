@@ -12,8 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import (
     Assignment,
-    BlinkAssignmentQuestion,
-    BlinkQuestion,
     Category,
     Discipline,
     Question,
@@ -264,94 +262,12 @@ class TeacherGroupsForm(forms.Form):
     group = forms.ModelChoiceField(queryset=StudentGroup.objects.all())
 
 
-class TeacherBlinksForm(forms.Form):
-    """Simple form to help update teacher blinks"""
-
-    blink = forms.ModelChoiceField(queryset=BlinkQuestion.objects.all())
-
-
-class CreateBlinkForm(forms.Form):
-    """Simple form to help create blink for teacher"""
-
-    new_blink = forms.ModelChoiceField(queryset=Question.objects.all())
-
-
-class BlinkSetTimeForm(forms.Form):
-    """Simple form to set time limit for blink questions"""
-
-    time_limit = forms.IntegerField(
-        max_value=120,
-        min_value=15,
-        initial=45,
-        help_text=_("Set the time limit to be used for each question."),
-    )
-
-
-class BlinkAnswerForm(forms.Form):
-    """Form to select one of the answer choices."""
-
-    error_css_class = "validation-error"
-
-    first_answer_choice = forms.ChoiceField(
-        label=_("Choose one of these answers:"), widget=forms.RadioSelect
-    )
-
-    def __init__(self, answer_choices, *args, **kwargs):
-        choice_texts = [
-            mark_safe(
-                ". ".join(
-                    (
-                        pair[0],
-                        ("<br>" + "&nbsp" * 5).join(
-                            re.split(r"<br(?: /)?>", pair[1])
-                        ),
-                    )
-                )
-            )
-            for pair in answer_choices
-        ]
-        self.base_fields["first_answer_choice"].choices = enumerate(
-            choice_texts, 1
-        )
-        forms.Form.__init__(self, *args, **kwargs)
-
-
-class BlinkQuestionStateForm(ModelForm):
-    """Form to set active state of a BlinkQuestion."""
-
-    class Meta:
-        model = BlinkQuestion
-        fields = ["active"]
-
-
-class RankBlinkForm(forms.Form):
-    """
-    Form to handle reordering or deletion of blinkquestions in a
-    blinkassignment.
-    """
-
-    # Might be better to set the queryset to limit to teacher's blink set
-    q = forms.ModelMultipleChoiceField(
-        queryset=BlinkAssignmentQuestion.objects.all(),
-        to_field_name="blinkquestion_id",
-    )
-    rank = forms.CharField(max_length=5, widget=forms.HiddenInput)
-
-
-class AddBlinkForm(forms.Form):
-    """Form to add a blinkquestion to a blinkassignment."""
-
-    # Might be better to set the queryset to limit to teacher's blinks
-    blink = forms.ModelChoiceField(queryset=BlinkQuestion.objects.all())
-
-
 class SignUpForm(ModelForm):
     """Form to register a new user (teacher) with e-mail address.
 
     The clean method is overridden to add basic password validation."""
 
-    email = forms.CharField(label=_("Email address"))
-    username = forms.CharField(label=_("Username"))
+    email = forms.EmailField()
 
     url = forms.URLField(
         label=_("Website"),

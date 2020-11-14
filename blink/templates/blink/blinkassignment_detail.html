@@ -17,7 +17,7 @@
     </h1>
 
     <div class="admin-link">
-      <a href="{% url 'teacher' teacher.id %}">{% trans 'Back to My Account' %}</a>
+      <a href="{% url 'teacher' request.user.teacher.id %}">{% trans 'Back to My Account' %}</a>
     </div>
 
     <h2 id="assignment" class="mdc-typography--display1 mdc-theme--secondary">{{object.title}}</h2>

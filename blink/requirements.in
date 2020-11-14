@@ -1,0 +1,4 @@
+channels
+channels_redis
+cryptography>3.2  # Reqd by safety
+django<3

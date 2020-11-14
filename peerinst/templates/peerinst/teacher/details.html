@@ -246,9 +246,9 @@
       </h2>
       <div class="foldable--body">
         <div class="admin-link">
-          <a href="{% url 'blinkAssignment-create' %}">{% trans 'Add script' %}</a>
+          <a href="{% url 'blink:blinkAssignment-create' %}">{% trans 'Add script' %}</a>
         </div>
-        <p class="m-bot-10">{% trans 'Student link' %}: <span class="bold">{{ request.get_host}}{% url 'blink-get-current' object.user.username %}</span></p>
+        <p class="m-bot-10">{% trans 'Student link' %}: <span class="bold">{{ request.get_host}}{% url 'blink:blink-get-current' object.user.username %}</span></p>
 
         {% if not object.blinkassignment_set.all %}
         <p class='mdc-typography--body1'>{% blocktrans %}A blink script is a series of blink questions strung together into one activity.  You do not have any blink scripts.{% endblocktrans %}</p>
@@ -273,10 +273,10 @@
               </span>
             </span>
             <span class="mdc-list-item__meta">
-              <a href="{% url 'blinkAssignment-delete' a.key %}">
+              <a href="{% url 'blink:blinkAssignment-delete' a.key %}">
                 <i class="material-icons md-24 mdc-ripple-surface icon-list">delete</i>
               </a>
-              <a href="{% url 'blinkAssignment-update' a.pk %}">
+              <a href="{% url 'blink:blinkAssignment-update' a.pk %}">
                 <i class="material-icons md-24 mdc-ripple-surface icon-list">mode_edit</i>
               </a>
             </span>
@@ -555,7 +555,7 @@
     {% endfor %}
     {% for a in object.blinkassignment_set.all %}
     document.getElementById("edit-blink-{{a.pk}}").addEventListener("click", function() {
-      window.location.href='{% url 'blink-waiting' username=object.user.username assignment=a.key %}';
+      window.location.href="{% url 'blink:blink-waiting' username=object.user.username assignment=a.key %}";
     });
     {% endfor %}
     // document.getElementById("quality-eval-edit").addEventListener("click", function() {

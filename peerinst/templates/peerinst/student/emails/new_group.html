@@ -3,28 +3,29 @@
 {% load i18n %}
 
 {% block body %}
-
 <h1>
-  {% trans "You've successfully been registered to group " %}
-  {{ group }}
+  {% trans "Welcome to " %}{{ group }}!
 </h1>
 
-<h2>{% trans "Sign in to your myDALITE account by clicking the link below:" %}</h2>
+<p>
+  {% trans "Access your myDALITE account by clicking the button below." %}
+</p>
 
-<a class="email-btn" href="{{ signin_link }}" target="_blank">
-  {% trans "Sign In" %}
+<table class="btn" role="presentation">
+  <tbody>
+    <tr>
+      <td align="center">
+        <a href="{{ signin_link }}" rel="noopener noreferrer" target="_blank">{% trans "Sign In" %}</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  {% trans "If the button above doesn't work, paste this link into your web browser:" %}
+</p>
+
+<a class="fine-print" href="{{ signin_link }}" rel="noopener noreferrer" target="_blank">
+  {{ signin_link }}
 </a>
-
-<div class="backup-link">
-  <p>
-    {% trans "If the button above doesn't work, paste this link into your web browser:" %}
-  </p>
-
-  <p>
-    <a href="{{ signin_link }}" target="_blank">
-      {{ signin_link }}
-    </a>
-  </p>
-</div>
-
 {% endblock %}

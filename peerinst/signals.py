@@ -18,17 +18,10 @@ from .models import (
 
 
 @receiver(request_started)
-def logger_signal(sender, environ, **kwargs):
-    # message = request.path
-    # user = str(request.user)
-    # timestamp_request = str(timezone.now())
-    # browser = request.META["HTTP_USER_AGENT"]
-    # remote = request.META["REMOTE_ADDR"]
-    # log = (
-    #     user + " | " + timestamp_request + " | " + message + " | " +
-    #     browser + " | " + remote
-    # )
-    if "HTTP_USER_AGENT" in environ:
+def logger_signal(sender, environ=None, scope=None, **kwargs):
+    # TODO: Update logger to operate in wsgi or asgi modes
+
+    if environ and "HTTP_USER_AGENT" in environ:
         log = {}
         log["HTTP_REFERER"] = environ.get("HTTP_REFERER")
         log["HTTP_USER_AGENT"] = environ.get("HTTP_USER_AGENT")

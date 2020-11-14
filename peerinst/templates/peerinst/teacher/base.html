@@ -12,6 +12,9 @@
 {% compress css file reputation__teacher %}
 <link href="{% static 'reputation/css/header/teacher.min.css' %}" rel="stylesheet">
 {% endcompress %}
+{% compress css file user_feedback %}
+<link rel="stylesheet" href="{% static 'user_feedback/css/styles.min.css' %}" />
+{% endcompress %}
 {% endblock %}
 
 {% block scripts %}
@@ -20,6 +23,14 @@
 <script src="{% static 'peerinst/js/custom_elements.min.js' %}"></script>
 <script src="{% static 'reputation/js/header/teacher.min.js' %}"></script>
 {% endcompress %}
+
+{% compress js file teacher__feedback %}
+<script
+  src="{% static 'user_feedback/js/app.min.js' %}"
+  defer="true"
+></script>
+{% endcompress %}
+
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
     teacher.initNotifications();
@@ -38,6 +49,30 @@
         tasks: "{% url 'teacher-tasks' %}",
       }
     );
+    const feedback = () => {
+        return user_feedback.h(user_feedback.App, {
+          acceptText: "{% trans 'Send' %}",
+          cancelText: "{% trans 'Cancel' %}",
+          charCountText: "{% trans 'characters remaining' %}",
+          description: "{% trans 'Leave feedback or get help' %}",
+          feedbackTypes: [
+            { value: 1, text: "Bug report" },
+            { value: 2, text: "Feature request" },
+            { value: 3, text: "General feedback" }
+          ],
+          menuFeedbackText: "{% trans 'Give Feedback' %}",
+          menuHelpText: "{% trans 'Tutorials and Forums' %}",
+          menuHelpUrl: "{% url 'pinax_forums:forums' %}",
+          placeholder: "{% trans 'Let us know what is on your mind...' %}",
+          snackbarError:
+            "{% trans 'An error occurred.  Please try again later.' %}",
+          snackbarSuccess: "{% trans 'Thanks for your feedback!' %}",
+          text: "",
+          title: "{% trans 'How can we improve your experience?' %}",
+          url: "{% url 'user_feedback:post' %}"
+        });
+      };
+      user_feedback.render(feedback(), document.getElementById("user-feedback-app"));
   });
 </script>
 {% endblock %}
@@ -68,4 +103,5 @@ class="logged-in-layout"
 <div class="header header--togglable">
   {% include 'peerinst/teacher/header/notifications.html' %}
 </div>
+<div id="user-feedback-app"></div>
 {% endblock %}

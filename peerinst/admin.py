@@ -11,11 +11,6 @@ from .models import (
     Answer,
     AnswerChoice,
     Assignment,
-    BlinkAnswer,
-    BlinkAssignment,
-    BlinkAssignmentQuestion,
-    BlinkQuestion,
-    BlinkRound,
     Category,
     Collection,
     Discipline,
@@ -288,31 +283,6 @@ class TeacherNotificationAdmin(admin.ModelAdmin):
 class LastLogoutAdmin(admin.ModelAdmin):
     list_display = ["user", "last_logout"]
     readonly_fields = ["user", "last_logout"]
-
-
-@admin.register(BlinkQuestion)
-class BlinkQuestionAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(BlinkRound)
-class BlinkRoundAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(BlinkAnswer)
-class BlinkAnswerAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(BlinkAssignment)
-class BlinkAssignmentAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(BlinkAssignmentQuestion)
-class BlinkAssignmentQuestionAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(Student)

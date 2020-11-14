@@ -52,7 +52,7 @@ def browser(live_server):
         options = webdriver.ChromeOptions()
         options.add_experimental_option("w3c", False)
         options.add_argument("start-maximized")
-        options.add_argument("window-size=1080,1200")
+        options.add_argument("window-size=1080,720")
 
         print(" > Requesting browser from hub")
         driver = webdriver.Remote(
