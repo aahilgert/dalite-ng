@@ -18,7 +18,7 @@ services:
   live_app:
     build: .
     image: mydalite
-    command: daphne -b 0.0.0.0 -p 8000 dalite.asgi:application
+    command: gunicorn dalite.wsgi:application --bind 0.0.0.0:8000
     environment:
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
       DALITE_DB_NAME: dalite_ng
@@ -43,7 +43,7 @@ services:
 
   test_app:
     image: mydalite
-    command: daphne -b 0.0.0.0 -p 8000 dalite.asgi:application
+    command: gunicorn dalite.wsgi:application --bind 0.0.0.0:8000
     environment:
       ALLOWED_HOST: nginx
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
@@ -111,7 +111,7 @@ services:
     build:
       context: .
       dockerfile: ./functional_tests/Dockerfile
-    command: pytest functional_tests --create-db --ignore=node_modules/ -vvv -s -k 'test_blink_script'
+    command: pytest functional_tests --create-db --ignore=node_modules/ -vvvv --exitfirst -s -k 'test_browse_db'
     depends_on:
       - selenium-hub
       - chrome

@@ -9,7 +9,7 @@
       <svg class="underline" width=150 height=4></svg>
     </h1>
 
-    <h2 class="mdc-typography--display1 mdc-theme--secondary">{{object.question.title}}</h2>
+    <h2 id="question-title" class="mdc-typography--display1 mdc-theme--secondary">{{object.question.title}}</h2>
 
     <p class="mdc-theme--secondary">{{object.question.text|safe}}</p>
 
@@ -20,7 +20,7 @@
     {% endif %}
 
     {{ form.non_field_errors }}
-  
+
     <form method="post">
       {% csrf_token %}
       <span class="mdc-typography--body1">{{ form.first_answer_choice.label }}</span>
