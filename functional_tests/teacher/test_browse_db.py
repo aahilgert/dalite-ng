@@ -7,10 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from functional_tests.fixtures import *  # noqa
-from .utils import accept_cookies, go_to_account, login
-
-
-MAX_WAIT = 30
+from .utils import accept_cookies, go_to_account, login, MAX_WAIT
 
 
 def search(browser, assert_, realistic_questions):
@@ -135,6 +132,7 @@ def check_favourites(browser, teacher, question, assignment):
 def test_search_function(
     browser, assert_, teacher, realistic_questions, assignment
 ):
+    browser.set_window_rect(0, 0, 1000, 1200)
     login(browser, teacher)
     accept_cookies(browser)
     search(browser, assert_, realistic_questions)
