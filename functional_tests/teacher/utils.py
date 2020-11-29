@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from functional_tests.fixtures import *  # noqa
 
 
-MAX_WAIT = 30
+MAX_WAIT = 60
 
 
 def accept_cookies(browser):

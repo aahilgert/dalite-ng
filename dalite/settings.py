@@ -30,7 +30,7 @@ INSTALLED_APPS = (
     "tos",
     "peerinst",
     "blink",
-    "channels",
+    # "channels",
     "REST",
     "cookielaw",
     "csp",

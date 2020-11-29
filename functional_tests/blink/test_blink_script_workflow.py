@@ -21,7 +21,7 @@ def make_blink_script(browser, q):
     input.send_keys(Keys.ENTER)
 
     assert "Update Script" in browser.find_element_by_tag_name("h1").text
-    assert script_name in browser.find_element_by_tag_name("h2").text
+    assert script_name in browser.find_element_by_id("assignment").text
 
     checkbox = browser.find_element_by_id("limit-search")
     checkbox.click()
@@ -62,7 +62,7 @@ def start_blink_script(browser):
 def validate_teacher_page(browser, q):
     time.sleep(2)
     assert "Blink Question" in browser.find_element_by_tag_name("h1").text
-    assert q.title in browser.find_element_by_tag_name("h2").text
+    assert q.title in browser.find_element_by_id("question-title").text
 
 
 def validate_student_page(second_browser, q):
@@ -70,7 +70,7 @@ def validate_student_page(second_browser, q):
     assert (
         "Blink Question" in second_browser.find_element_by_tag_name("h1").text
     )
-    assert q.title in second_browser.find_element_by_tag_name("h2").text
+    assert q.title in second_browser.find_element_by_id("question-title").text
     assert len(second_browser.find_elements_by_class_name("mdc-radio")) > 0
 
 
@@ -81,7 +81,7 @@ def answer_blink(second_browser, q, choice):
     assert (
         "Blink Question" in second_browser.find_element_by_tag_name("h1").text
     )
-    assert q.title in second_browser.find_element_by_tag_name("h2").text
+    assert q.title in second_browser.find_element_by_id("question-title").text
     assert len(second_browser.find_elements_by_class_name("mdc-radio")) == 0
 
 
