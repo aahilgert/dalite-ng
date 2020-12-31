@@ -456,7 +456,7 @@
   'use strict';
 
   // No form submission on ENTER key
-  $("#question-create-form").keypress(function( event ) {
+  $("#question-create-form").on("keypress", function( event ) {
     if ( event.which == 13 ) {
       event.preventDefault();
     }
@@ -485,9 +485,9 @@
     enumerate();
   }
 
-  $('#id_type').change(function(){
+  $('#id_type').on("change", function(){
     if (this.value != "{{question.type}}") {
-      $('#next').find('button').attr('disabled', 'true');
+      $('#next').find('button').attr('disabled', true);
     }
     else {
       $('#next').find('button').attr('disabled', false);
@@ -619,7 +619,7 @@
   bundle.bindCategoryAutofill("{% url 'search-categories' %}");
 
   // TinyMCE bind to textarea
-  $('#id_text').removeAttr('required');
+  $('#id_text').prop('required', false);
   tinymce.init({
     selector: 'textArea',
     elementpath: false,

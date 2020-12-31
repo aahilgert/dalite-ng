@@ -535,7 +535,7 @@
       if (localStorage.getItem('collapse-'+container.find("h2").attr('id')) === 'false') {
         $(this).addClass('foldable__unfolded');
       }
-      container.find("h2").click(function() {
+      container.find("h2").on("click", function() {
         const state = localStorage.getItem('collapse-'+$(this).attr('id'));
         localStorage.setItem('collapse-'+$(this).attr('id'), state === 'false' ? 'true' : 'false');
       })

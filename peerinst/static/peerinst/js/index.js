@@ -158,15 +158,15 @@ export function categoryForm(
   // Define ENTER key
   const form = $("#category_form").find("#id_title");
   if (form.length) {
-    $(form).keypress(function (event) {
+    $(form).on("keypress", function (event) {
       if (event.which == 13) {
-        $("#submit_category_form").click();
+        $("#submit_category_form").trigger("click");
       }
     });
   }
 
   // Handle clear
-  $("#clear_category_form").click(function () {
+  $("#clear_category_form").on("click", function () {
     $("#category_form").load(formUrl, function () {
       bundle.bindAjaxTextInputForm(
         idToBind,
@@ -194,14 +194,14 @@ export function categoryForm(
     },
   });
 
-  $("#submit_category_form").click(function () {
+  $("#submit_category_form").on("click", function () {
     const title = $("#category_form").find("input[name='title']").val();
 
     // Send the data using post
     const posting = $.post(createUrl, { title });
 
     // Put the results in a div
-    posting.success(function (data, status) {
+    posting.done(function (data, status) {
       $("#category_form").empty().append(data);
 
       const formType = $("#create_new_category");
@@ -216,7 +216,7 @@ export function categoryForm(
           completionHook,
         );
         bundle.autoInit();
-        $("#category_form").find("input[name='title']")[0].focus();
+        $("#category_form").find("input[name='title']")[0].trigger("focus");
       } else {
         bundle.bindAjaxTextInputForm(
           idToBind,
@@ -229,7 +229,10 @@ export function categoryForm(
         );
         bundle.bindCategoryAutofill(searchUrl);
         bundle.autoInit();
-        $("#autofill_categories").val(title).focus().autocomplete("search");
+        $("#autofill_categories")
+          .val(title)
+          .trigger("focus")
+          .autocomplete("search");
         if (completionHook) {
           completionHook();
         }
@@ -666,12 +669,12 @@ export function disciplineForm(
   completionHook,
 ) {
   // Bind form submit to icon
-  $("#submit_discipline_form").click(function () {
+  $("#submit_discipline_form").on("click", function () {
     $("#discipline_create_form").submit();
   });
 
   // Handle clear
-  $("#clear_discipline_form").click(function () {
+  $("#clear_discipline_form").on("click", function () {
     $("#discipline_form").load(formUrl, function () {
       bundle.bindAjaxTextInputForm(
         idToBind,
@@ -697,14 +700,14 @@ export function disciplineForm(
     },
   });
 
-  $("#submit_discipline_form").click(function () {
+  $("#submit_discipline_form").on("click", function () {
     const title = $("#discipline_form").find("input[name='title']").val();
 
     // Send the data using post
     const posting = $.post(createUrl, { title });
 
     // Put the results in a div
-    posting.success(function (data, status) {
+    posting.done(function (data, status) {
       $("#discipline_form").empty().append(data);
 
       const formType = $("#discipline_create_form");
@@ -1280,7 +1283,7 @@ export function addDialog() {
  */
 export function handleQuestionDelete(url) {
   // Toggle questions
-  $(".toggle-deleted-questions").click(() => {
+  $(".toggle-deleted-questions").on("click", () => {
     $(".deleted").slideToggle();
     $("#hide-deleted-questions").toggle();
     $("#show-deleted-questions").toggle();
@@ -1288,7 +1291,7 @@ export function handleQuestionDelete(url) {
   });
 
   // Delete/undelete
-  $("[class*=delete-question]").click((event) => {
+  $("[class*=delete-question]").on("click", (event) => {
     const el = event.target;
     const pk = $(el).attr("question");
     const posting = $.post(url, { pk });

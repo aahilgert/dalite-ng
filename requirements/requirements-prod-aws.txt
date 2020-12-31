@@ -67,7 +67,7 @@ jmespath==0.9.5           # via boto3, botocore
 jsonfield==3.1.0          # via -r requirements/requirements-base.txt, django-lti-tool-provider
 kombu==4.6.7              # via -r requirements/requirements-base.txt, celery
 lti==0.9.4                # via -r requirements/requirements-base.txt, django-lti-tool-provider
-lxml==4.6.1               # via -r requirements/requirements-base.txt, lti
+lxml==4.6.2               # via -r requirements/requirements-base.txt, lti
 msgpack==1.0.0            # via -r requirements/requirements-base.txt, channels-redis
 mysqlclient==1.4.6        # via -r requirements/requirements-base.txt
 numpy==1.18.1             # via -r requirements/requirements-base.txt, pandas

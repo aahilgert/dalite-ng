@@ -5,7 +5,12 @@
 {% block stylesheets %}
 {{ block.super }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/flatpickr"
+  integrity="sha384-gaslNpKooBa6zI83pdMZf4vI0B98c874imcQNRXEQKgdof7KVMUVZmSy8br/WBI2"
+  crossorigin="anonymous">
+</script>
+
 <style nonce="{{ request.csp_nonce }}">
 .flatpickr-input {
   width: 150px;
@@ -107,7 +112,7 @@
 {% block scripts %}
 {{ block.super }}
 <script nonce="{{ request.csp_nonce }}">
-$("#create-group-assignment").submit(function(event) {
+$("#create-group-assignment").on("submit", function(event) {
   event.preventDefault();
   var $form = $(this);
   var datetimeField = $form.find( "input[name='due_date']" );

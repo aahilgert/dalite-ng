@@ -26,7 +26,7 @@ export function filter(el) {
   }
 
   if ($(".mdc-chip--selected").length == 0) {
-    $("#reset-filters").attr("disabled", true);
+    $("#reset-filters").prop("disabled", true);
   }
 
   $("#search_results .mdc-card").css("display", "block");
@@ -43,7 +43,7 @@ export function filter(el) {
             .indexOf(this.getAttribute("c").toLowerCase()) < 0 // eslint-disable-line
         ) {
           $(card).css("display", "none");
-          $("#reset-filters").attr("disabled", false);
+          $("#reset-filters").prop("disabled", false);
         }
       });
 
@@ -55,7 +55,7 @@ export function filter(el) {
           this.getAttribute("d").toLowerCase() // eslint-disable-line
         ) {
           $(card).css("display", "none");
-          $("#reset-filters").attr("disabled", false);
+          $("#reset-filters").prop("disabled", false);
         }
       });
   });
@@ -70,7 +70,7 @@ export function reset() {
   $("#search_results .mdc-card").each(function () {
     $(this).css("display", "block"); // eslint-disable-line
     $(".mdc-chip").removeClass("mdc-chip--selected");
-    $("#reset-filters").attr("disabled", true);
+    $("#reset-filters").prop("disabled", true);
   });
 
   recountResults();
@@ -83,7 +83,7 @@ export function processResponse() {
   bundle.toggleImages();
   bundle.toggleAnswers();
 
-  $("#search-bar").attr("disabled", false);
+  $("#search-bar").prop("disabled", false);
   $("#progressbar").addClass("mdc-linear-progress--closed");
 
   // Update template response
@@ -220,7 +220,7 @@ export function setupSearch() {
   $("#filters").css("display", "none");
   $("#show-discipline-filters").css("display", "none");
   $("#show-category-filters").css("display", "none");
-  $("#search-bar").attr("disabled", true);
+  $("#search-bar").prop("disabled", true);
   $("#progressbar").removeClass("mdc-linear-progress--closed");
   window.location.href = "#progressbar";
 }
