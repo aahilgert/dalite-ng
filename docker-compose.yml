@@ -3,7 +3,7 @@
 # To tear down (don't forget the -v to get rid of static folder):
 #   `docker-compose down -v`
 # To watch Chrome tests:
-#   Open a VNC client (Safari works)
+#   Open a VNC client
 #   Go to vnc://127.0.0.1:41960 and enter password "secret"
 
 # TODO:
@@ -22,12 +22,14 @@ services:
     environment:
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
       DALITE_DB_NAME: dalite_ng
+      EMAIL_BACKEND: django.core.mail.backends.filebased.EmailBackend
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       CHANNELS_REDIS_ADDRESS: redis
       CHANNELS_REDIS_PORT: 6379
     volumes:
       - static:/code/static
+      - emails:/code/emails
 
   celery:
     image: mydalite
@@ -48,12 +50,14 @@ services:
       ALLOWED_HOST: nginx
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
       DALITE_DB_NAME: test_dalite_ng
+      EMAIL_BACKEND: django.core.mail.backends.filebased.EmailBackend
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       CHANNELS_REDIS_ADDRESS: redis
       CHANNELS_REDIS_PORT: 6379
     volumes:
       - static:/code/static
+      - emails:/code/emails
 
   nginx:
     build: ./nginx
@@ -107,11 +111,12 @@ services:
       - SCREEN_WIDTH=2732
       - SCREEN_HEIGHT=1536
 
+  # The test service runs all functional tests against the live test_app server.
   test:
     build:
       context: .
       dockerfile: ./functional_tests/Dockerfile
-    command: pytest functional_tests --create-db --ignore=node_modules/ -vvvv --exitfirst -s -k 'test_browse_db'
+    command: pytest functional_tests --create-db --ignore=node_modules/ -vvvv --exitfirst -s -k 'test_new_user_signup_workflow'
     depends_on:
       - selenium-hub
       - chrome
@@ -123,6 +128,8 @@ services:
       DJANGO_SETTINGS_MODULE: dalite.test_settings
     volumes:
       - ./snapshots:/code/snapshots
+      - emails:/code/emails
 
 volumes:
   static:
+  emails:

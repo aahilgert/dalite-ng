@@ -29,7 +29,7 @@ channels==2.4.0           # via -r requirements/requirements-base.txt, channels-
 chardet==3.0.4            # via -r requirements/requirements-base.txt, requests
 constantly==15.1.0        # via -r requirements/requirements-base.txt, twisted
 coverage==5.0.3           # via -r requirements/requirements-test.in, pytest-cov
-cryptography==3.2.1       # via -r requirements/requirements-base.txt, autobahn, pyopenssl, service-identity
+cryptography==3.3.1       # via -r requirements/requirements-base.txt, autobahn, pyopenssl, service-identity
 cssutils==1.0.2           # via -r requirements/requirements-base.txt, pynliner
 daphne==2.5.0             # via -r requirements/requirements-base.txt, channels
 ddt==1.2.2                # via -r requirements/requirements-test.in

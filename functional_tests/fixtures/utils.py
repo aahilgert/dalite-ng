@@ -1,14 +1,13 @@
 import os
-import pytest
 import time
-
 from functools import partial
+
+import pytest
 from django.conf import settings
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.remote.webelement import WebElement
-
 
 MAX_WAIT = 30
 try:
@@ -121,6 +120,7 @@ def browser(live_server):
             for d in logs
             if d["source"] != "network"
             and "tinymce" not in d["message"]
+            and "youtube" not in d["message"]
             and "mdc-auto-init" not in d["message"]
         ]
         assert len(filtered_logs) == 0, logs

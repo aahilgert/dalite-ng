@@ -30,7 +30,7 @@ channels-redis==3.1.0     # via -r requirements/requirements-base.txt
 channels==2.4.0           # via -r requirements/requirements-base.txt, channels-redis
 chardet==3.0.4            # via -r requirements/requirements-base.txt, requests
 constantly==15.1.0        # via -r requirements/requirements-base.txt, twisted
-cryptography==3.2.1       # via -r requirements/requirements-base.txt, autobahn, pyopenssl, service-identity
+cryptography==3.3.1       # via -r requirements/requirements-base.txt, autobahn, pyopenssl, service-identity
 cssutils==1.0.2           # via -r requirements/requirements-base.txt, pynliner
 daphne==2.5.0             # via -r requirements/requirements-base.txt, channels
 django-analytical==2.5.0  # via -r requirements/requirements-base.txt
