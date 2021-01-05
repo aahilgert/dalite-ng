@@ -20,10 +20,9 @@ class SimpleMessage(object):
             else:
                 setattr(self, key.lower(), value)
         self.body = str(message.get_body(preferencelist=("plain",)))
-        print(self.body)
 
 
-class Outbox(object):
+class FileBasedOutbox(object):
     def __init__(self, *args, **kwargs):
         self.volume = Path(settings.EMAIL_FILE_PATH)
 
@@ -79,7 +78,7 @@ def mail_outbox(mailoutbox):
     staging_server = os.environ.get("STAGING_SERVER")
     if staging_server:
         print("Using staging server > replacing default mailoutbox fixture")
-        outbox = Outbox()
+        outbox = FileBasedOutbox()
         yield outbox
         outbox.clear()
     else:

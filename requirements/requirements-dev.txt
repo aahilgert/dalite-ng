@@ -109,7 +109,7 @@ pre-commit==2.1.1         # via -r requirements/requirements-dev.in
 prompt-toolkit==3.0.3     # via ipython
 ptyprocess==0.6.0         # via pexpect
 publicsuffixlist==0.6.12  # via httpobs
-py==1.8.1                 # via -r requirements/requirements-test.txt, pytest
+py==1.10.0                # via -r requirements/requirements-test.txt, pytest
 pyasn1-modules==0.2.8     # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, service-identity
 pyasn1==0.4.8             # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt, pyasn1-modules, service-identity
 pycodestyle==2.5.0        # via flake8
