@@ -31,8 +31,7 @@ __all__ = [
     "undistributed_assignment",
 ]
 
-from emails import mail_outbox
-
+from .emails_ import mail_outbox
 from .forums_ import forum, forums
 from .peerinst_ import (
     admin,

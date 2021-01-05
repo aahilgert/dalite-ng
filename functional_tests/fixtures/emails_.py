@@ -6,11 +6,31 @@ import pytest
 from django.conf import settings
 
 
+class SimpleMessage(object):
+    """
+    A very simple substitute for an EmailMessage
+    """
+
+    def __init__(self, message, *args, **kwargs):
+        for key, value in message.items():
+            if key.lower() == "to":
+                self.to = value.strip().split(", ")
+            elif key.lower() == "cc":
+                self.cc = value.strip().split(", ")
+            else:
+                setattr(self, key.lower(), value)
+        self.body = str(message.get_body(preferencelist=("plain",)))
+        print(self.body)
+
+
 class Outbox(object):
     def __init__(self, *args, **kwargs):
         self.volume = Path(settings.EMAIL_FILE_PATH)
 
     def __len__(self):
+        """
+        Return count of files in email directory
+        """
         count = 0
         for file in self.volume.iterdir():
             if file.is_file():
@@ -19,22 +39,23 @@ class Outbox(object):
 
     def __getitem__(self, position):
         """
-        Return file as email object
+        Return file as a SimpleMessage based on position in time-sorted list
+        (newest files first)
         """
         email_files = [
             file for file in self.volume.iterdir() if file.is_file()
         ]
-        try:
-            email_file = email_files[position]
-        except IndexError:
-            raise Exception
 
-        with email_file.open() as f:
-            return email.message_from_file(f, policy=email.policy.default)
+        with sorted(
+            email_files, key=lambda x: x.stat().st_mtime_ns, reverse=True
+        )[position].open() as f:
+            message = email.message_from_file(f, policy=email.policy.default)
 
-    def __del__(self):
+        return SimpleMessage(message)
+
+    def clear(self):
         """
-        Clear the email directory when fixture is out of scope
+        Clear the email directory
         """
         for file in self.volume.iterdir():
             if file.is_file():
@@ -47,11 +68,11 @@ def mail_outbox(mailoutbox):
     """
     Django uses the locmem email backend for testing that exposes an outbox
     which can be queried, cleared, etc.  The pytest-django fixture mailoutbox
-    is a shortcut to the output attribute.
+    is a shortcut to the outbox attribute.
 
-    Using a multi-container dockerized test environment means email is on the
-    process acting as the host, not the process executing the functional test
-    scripts.  The file-based email backend can be used to save emails to a
+    Using a multi-container dockerized test environment means sent emails are
+    on the process acting as host, not the process executing the functional
+    test scripts.  The file-based email backend can be used to save emails to a
     shared network volume and accessed across processes, but we need to
     implement the outbox interface.
     """

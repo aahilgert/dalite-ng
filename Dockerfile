@@ -31,8 +31,10 @@ COPY --from=static /code/tos ./tos
 COPY --from=static /code/manage.py .
 RUN python3 manage.py collectstatic --clear --noinput
 RUN python3 manage.py compress
+RUN mkdir emails
 
 # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
 RUN groupadd -r container_user && useradd --no-log-init -r -g container_user container_user
 RUN chown -R container_user:container_user /code
+VOLUME /code/emails
 USER container_user
