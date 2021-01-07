@@ -1,7 +1,5 @@
 import re
 
-import pytest
-
 from functional_tests.fixtures import *  # noqa
 from functional_tests.teacher.utils import go_to_account
 from tos.models import Role, Tos
@@ -146,40 +144,6 @@ def test_new_user_signup_workflow(
 
     # Redirected to dashboard
     assert browser.current_url.endswith("dashboard/")
-
-
-@pytest.mark.skip
-def test_new_user_signup_with_email_server_error(browser, assert_, settings):
-    """
-    Reimplement as a unit test
-    """
-    settings.EMAIL_BACKEND = ""
-
-    browser.get(browser.server_url + "/signup")
-
-    browser.find_element_by_id("accept-cookies").click()
-
-    form = browser.find_element_by_tag_name("form")
-    assert form.get_attribute("method") == "post"
-
-    inputbox = browser.find_element_by_id("id_email")
-    inputbox.send_keys("test@test.com")
-
-    inputbox = browser.find_element_by_id("id_username")
-    inputbox.send_keys("test")
-
-    inputbox = browser.find_element_by_id("id_url")
-    inputbox.clear()
-    inputbox.send_keys("http://www.mydalite.org")
-
-    browser.find_element_by_id("submit-btn").click()
-
-    browser.wait_for(
-        lambda: assert_(
-            "An error occurred while processing your request"
-            in browser.page_source
-        )
-    )
 
 
 def test_inactive_user_login(browser, assert_, inactive_user):

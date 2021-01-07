@@ -121,7 +121,7 @@ services:
     build:
       context: .
       dockerfile: ./functional_tests/Dockerfile
-    command: pytest functional_tests --reuse-db --ignore=node_modules/ -vvvv --exitfirst -s -k 'test_new_user_signup_workflow'
+    command: pytest functional_tests/new_user --reuse-db --ignore=node_modules/ -vvvv --exitfirst -s
     depends_on:
       - selenium-hub
       - chrome
