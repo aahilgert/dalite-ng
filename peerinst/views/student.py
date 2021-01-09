@@ -2,12 +2,11 @@ import json
 import logging
 import re
 
-from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST, require_safe
@@ -20,9 +19,9 @@ from ..models import (
     StudentAssignment,
     StudentGroup,
     StudentGroupAssignment,
+    StudentGroupCourse,
     StudentGroupMembership,
     StudentNotification,
-    StudentGroupCourse,
 )
 from ..students import (
     authenticate_student,
@@ -78,7 +77,7 @@ def validate_group_data(req):
     if group_name is None:
         try:
             hash_ = re.match(
-                r"^https?://[^/]+/\w{2}/live/signup/form/([0-9A-Za-z=_-]+)$",
+                rf"^{req.scheme}://[^/]+/\w*/live/signup/form/([0-9A-Za-z=_-]+)$",  # noqa E501
                 group_link,
             ).group(1)
         except AttributeError:
@@ -245,13 +244,6 @@ def index_page(req):
 
     StudentNotification.clean(student)
 
-    host = settings.ALLOWED_HOSTS[0]
-    if host.startswith("localhost") or host.startswith("127.0.0.1"):
-        protocol = "http"
-        host = "{}:{}".format(host, settings.DEV_PORT)
-    else:
-        protocol = "https"
-
     groups = StudentGroupMembership.objects.filter(student=student)
 
     assignments = {
@@ -261,8 +253,8 @@ def index_page(req):
                 "pk": assignment.group_assignment.assignment.pk,
                 "due_date": assignment.group_assignment.due_date,
                 "link": "{}://{}{}".format(
-                    protocol,
-                    host,
+                    req.scheme,
+                    req.get_host(),
                     reverse(
                         "live",
                         kwargs={
@@ -438,7 +430,7 @@ def join_group(req, student):
     if isinstance(group, HttpResponse):
         return group
 
-    student.join_group(group, mail_type="new_group")
+    student.join_group(group, mail_type="new_group", request=req)
 
     try:
         membership = StudentGroupMembership.objects.get(
@@ -459,12 +451,6 @@ def join_group(req, student):
     token = create_student_token(
         student.student.username, student.student.email
     )
-    host = settings.ALLOWED_HOSTS[0]
-    if host.startswith("localhost") or host.startswith("127.0.0.1"):
-        protocol = "http"
-        host = "{}:{}".format(host, settings.DEV_PORT)
-    else:
-        protocol = "https"
 
     data = {
         "name": group.name,
@@ -476,8 +462,8 @@ def join_group(req, student):
                 "title": assignment.group_assignment.assignment.title,
                 "due_date": assignment.group_assignment.due_date.isoformat(),
                 "link": "{}://{}{}".format(
-                    protocol,
-                    host,
+                    req.scheme,
+                    req.get_host(),
                     reverse(
                         "live",
                         kwargs={

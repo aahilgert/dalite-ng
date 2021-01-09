@@ -5,7 +5,10 @@ from functools import partial
 import pytest
 from django.conf import settings
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import (
+    UnexpectedAlertPresentException,
+    WebDriverException,
+)
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -130,7 +133,10 @@ def browser(live_server):
     # Add screenshot
     def take_screenshot(driver):
         file_path = os.path.join(settings.BASE_DIR, "snapshots/test.png")
-        driver.save_screenshot(file_path)
+        try:
+            driver.save_screenshot(file_path)
+        except UnexpectedAlertPresentException:
+            pass
 
     # Log function for finders
     def click_with_log(finder, driver, *args, **kwargs):

@@ -9,6 +9,8 @@ DEFAULT_PASSWORD = "default_password"
 
 DEBUG = False
 
+DEFAULT_SCHEME_HOST_PORT = "http://nginx:8080"
+
 SSL_CONTEXT = False
 SECURE_HSTS_SECONDS = 0
 CSRF_COOKIE_NAME = "csrftoken"

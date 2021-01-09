@@ -35,6 +35,7 @@ services:
     image: mydalite
     command: celery -A dalite worker -l debug
     environment:
+      ALLOWED_HOST: nginx
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
       DALITE_DB_NAME: test_dalite_ng
       DJANGO_SETTINGS_MODULE: dalite.functional_test_settings
@@ -121,12 +122,13 @@ services:
     build:
       context: .
       dockerfile: ./functional_tests/Dockerfile
-    command: pytest functional_tests/new_user --reuse-db --ignore=node_modules/ -vvvv --exitfirst -s
+    command: pytest functional_tests/student --reuse-db --ignore=node_modules/ -vvvv --exitfirst -s
     depends_on:
       - selenium-hub
       - chrome
       - firefox
     environment:
+      ALLOWED_HOST: nginx  #
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
       STAGING_SERVER: nginx:8080
       SELENIUM_HUB: selenium-hub:4444

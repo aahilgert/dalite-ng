@@ -1,7 +1,7 @@
 import pytest
 
-from . import factories as f
 from ..teacher import teacher  # noqa
+from . import factories as f
 from .generators import (
     add_disciplines,
     add_questions,
