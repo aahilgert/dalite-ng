@@ -3,7 +3,7 @@
 # To tear down (don't forget the -v to get rid of static folder):
 #   `docker-compose down -v`
 # To watch Chrome tests:
-#   Open a VNC client (Safari works)
+#   Open a VNC client
 #   Go to vnc://127.0.0.1:41960 and enter password "secret"
 
 # TODO:
@@ -18,42 +18,52 @@ services:
   live_app:
     build: .
     image: mydalite
-    command: daphne -b 0.0.0.0 -p 8000 dalite.asgi:application
+    command: gunicorn dalite.wsgi:application --bind 0.0.0.0:8000
     environment:
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
       DALITE_DB_NAME: dalite_ng
+      EMAIL_BACKEND: django.core.mail.backends.filebased.EmailBackend
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       CHANNELS_REDIS_ADDRESS: redis
       CHANNELS_REDIS_PORT: 6379
     volumes:
       - static:/code/static
+      - emails:/code/emails
 
   celery:
     image: mydalite
     command: celery -A dalite worker -l debug
     environment:
+      ALLOWED_HOST: nginx
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
-      DALITE_DB_NAME: dalite_ng
+      DALITE_DB_NAME: test_dalite_ng
+      DJANGO_SETTINGS_MODULE: dalite.functional_test_settings
+      EMAIL_BACKEND: django.core.mail.backends.filebased.EmailBackend
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+    volumes:
+      - emails:/code/emails
 
   redis:
     image: redis:5.0
 
   test_app:
     image: mydalite
-    command: daphne -b 0.0.0.0 -p 8000 dalite.asgi:application
+    command: gunicorn dalite.wsgi:application --bind 0.0.0.0:8000
     environment:
       ALLOWED_HOST: nginx
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
       DALITE_DB_NAME: test_dalite_ng
+      DJANGO_SETTINGS_MODULE: dalite.functional_test_settings
+      EMAIL_BACKEND: django.core.mail.backends.filebased.EmailBackend
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       CHANNELS_REDIS_ADDRESS: redis
       CHANNELS_REDIS_PORT: 6379
     volumes:
       - static:/code/static
+      - emails:/code/emails
 
   nginx:
     build: ./nginx
@@ -107,22 +117,26 @@ services:
       - SCREEN_WIDTH=2732
       - SCREEN_HEIGHT=1536
 
+  # The test service runs all functional tests against the live test_app server.
   test:
     build:
       context: .
       dockerfile: ./functional_tests/Dockerfile
-    command: pytest functional_tests --create-db --ignore=node_modules/ -vvv -s -k 'test_blink_script'
+    command: pytest functional_tests/teacher --reuse-db --ignore=node_modules/ -vvvv --exitfirst -s -k "test_create_collection"
     depends_on:
       - selenium-hub
       - chrome
       - firefox
     environment:
+      ALLOWED_HOST: nginx  #
       DALITE_DB_HOST: ${HOST:-host.docker.internal}
       STAGING_SERVER: nginx:8080
       SELENIUM_HUB: selenium-hub:4444
-      DJANGO_SETTINGS_MODULE: dalite.test_settings
+      DJANGO_SETTINGS_MODULE: dalite.functional_test_settings
     volumes:
       - ./snapshots:/code/snapshots
+      - emails:/code/emails
 
 volumes:
   static:
+  emails:

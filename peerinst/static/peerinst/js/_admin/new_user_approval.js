@@ -44,13 +44,15 @@ async function verifyUser(elem, username, approve) {
 
 function initListeners() {
   document.querySelectorAll("#new-user-approval li").forEach((elem) => {
-    const username = elem.querySelector(".user__username").textContent;
-    elem
-      .querySelector(".user__approve")
-      .addEventListener("click", () => verifyUser(elem, username, true));
-    elem
-      .querySelector(".user__refuse")
-      .addEventListener("click", () => verifyUser(elem, username, false));
+    if (elem.querySelector(".user__username")) {
+      const username = elem.querySelector(".user__username").textContent;
+      elem
+        .querySelector(".user__approve")
+        .addEventListener("click", () => verifyUser(elem, username, true));
+      elem
+        .querySelector(".user__refuse")
+        .addEventListener("click", () => verifyUser(elem, username, false));
+    }
   });
 }
 

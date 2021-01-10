@@ -1,26 +1,24 @@
 import re
 import time
+from datetime import datetime, timedelta
 
+import pytz
 from django.urls import reverse
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
+from faker import Faker
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from functional_tests.fixtures import *  # noqa
 from functional_tests.student.test_index_workflow import join_group_with_link
-from faker import Faker
-from datetime import datetime, timedelta
-import time
 from peerinst.models.answer import Answer, AnswerChoice
-import pytz
-
 
 fake = Faker()
 
 
-def signin(browser, student, mailoutbox, new=False):
+def signin(browser, student, mail_outbox, new=False):
     email = student.student.email
 
     browser.get("{}{}".format(browser.server_url, reverse("login")))
@@ -33,11 +31,11 @@ def signin(browser, student, mailoutbox, new=False):
     input_.send_keys(email)
     input_.send_keys(Keys.ENTER)
 
-    assert len(mailoutbox) == 1
-    assert list(mailoutbox[0].to) == [email]
+    assert len(mail_outbox) == 1
+    assert list(mail_outbox[0].to) == [email]
 
     m = re.search(
-        "http[s]*://.*/student/\?token=.*", mailoutbox[0].body
+        r"http[s]*://.*/student/\?token=.*", mail_outbox[0].body
     )  # noqa W605
     signin_link = m.group(0)
 
@@ -55,7 +53,7 @@ def signin(browser, student, mailoutbox, new=False):
 def access_logged_in_account_from_landing_page(browser, student):
     browser.get(browser.server_url)
     link = browser.find_element_by_link_text(
-        "Welcome back {}".format(student.student.email)
+        "Welcome back, {}".format(student.student.email)
     )
     link.click()
     assert re.search(r"student/", browser.current_url)
@@ -65,17 +63,14 @@ def logout(browser, assert_):
     icon = browser.find_element_by_xpath("//i[contains(text(), 'menu')]")
     icon.click()
 
-    logout_button = browser.find_element_by_link_text("Logout")
+    logout_button = browser.find_element_by_id("logout")
     browser.wait_for(assert_(logout_button.is_enabled()))
     # FIXME:
     # Assertion shoud include logout_button.is_displayed() but throws w3c error
     time.sleep(2)
     logout_button.click()
 
-    assert browser.current_url == browser.server_url + "/en/"
-
-    browser.find_element_by_link_text("Login")
-    browser.find_element_by_link_text("Signup")
+    assert browser.current_url == browser.server_url + "/en/login/"
 
 
 def consent_to_tos(browser):
@@ -87,14 +82,10 @@ def consent_to_tos(browser):
 
 def answer_questions(browser, student, assignment):
     browser_url = browser.server_url
-    str(browser_url)
     browser.find_element_by_class_name(
-        "student-group--assignment-title"
+        "student-group--assignment-link"
     ).click()
-    time.sleep(3)
-    url = browser.current_url
-    str(url)
-    browser.get(browser_url + url[21:])
+
     first = True
     answers_done = 0
     for question in assignment.questions.all():
@@ -122,6 +113,15 @@ def answer_questions(browser, student, assignment):
         )
         if answers_done == 9:
             browser.find_element_by_class_name("mdc-button").click()
+
+            alert = browser.switch_to.alert
+
+            assert (
+                "Once you click OK you will not be able to complete any unanswered questions."  # noqa E501
+                in alert.text
+            )
+
+            alert.accept()
         else:
             if first:
                 browser.find_element_by_class_name("md-60").click()
@@ -139,7 +139,7 @@ def answer_questions(browser, student, assignment):
 def test_question_answering(
     browser,
     assert_,
-    mailoutbox,
+    mail_outbox,
     students,
     group,
     teacher,
@@ -150,23 +150,23 @@ def test_question_answering(
     group.save()
     student = students[0]
     for question in assignment.questions.all():
-        for i in range(0, 4):
+        for i in range(4):
             q = AnswerChoice.objects.create(
-                question=question,
-                text=fake.sentence(nb_words=6),
-                correct=False,
+                question=question, text=fake.paragraph(), correct=False,
             )
             if i == 0:
                 q.correct = True
             q.save()
-            Answer.objects.create(
-                question=question,
-                user_token="",
-                first_answer_choice=i,
-                datetime_start=datetime.now(pytz.utc),
-                datetime_first=datetime.now(pytz.utc),
-                datetime_second=datetime.now(pytz.utc),
-            )
+            for j in range(4):
+                Answer.objects.create(
+                    question=question,
+                    user_token="",
+                    first_answer_choice=i,
+                    rationale=fake.sentence(nb_words=10),
+                    datetime_start=datetime.now(pytz.utc),
+                    datetime_first=datetime.now(pytz.utc),
+                    datetime_second=datetime.now(pytz.utc),
+                )
     assignment.save()
     student_group_assignment.assignment = assignment
     student_group_assignment.group = group
@@ -175,6 +175,6 @@ def test_question_answering(
         days=30
     )
     student_group_assignment.save()
-    signin(browser, student, mailoutbox)
+    signin(browser, student, mail_outbox)
     join_group_with_link(browser, group)
     answer_questions(browser, student, assignment)

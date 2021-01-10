@@ -10,7 +10,7 @@
 
 <p>{% trans "You can login at:" %}</p>
 
-<p>https://{{ request.get_host }}{% url 'login' %}</p>
+<p>{{ request.scheme }}://{{ request.get_host }}{% url 'login' %}</p>
 
 <p>{% trans "Your username, in case you've forgotten:" %} {{ username }}</p>
 

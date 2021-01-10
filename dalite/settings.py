@@ -16,10 +16,10 @@ ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 if os.environ.get("ALLOWED_HOST"):
     ALLOWED_HOSTS.append(os.environ.get("ALLOWED_HOST"))
 
-DEV_PORT = 8000  # port used during development
+# Set default url for things like signin links when no request is available
+DEFAULT_SCHEME_HOST_PORT = "http://localhost:8000"
 
 # Application definition
-
 INSTALLED_APPS = (
     "user_feedback",
     "course_flow",
@@ -30,7 +30,7 @@ INSTALLED_APPS = (
     "tos",
     "peerinst",
     "blink",
-    "channels",
+    # "channels",
     "REST",
     "cookielaw",
     "csp",

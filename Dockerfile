@@ -7,7 +7,19 @@ RUN mkdir /code
 WORKDIR /code
 COPY package*.json ./
 RUN npm i
-COPY . /code/
+COPY analytics ./analytics
+COPY blink ./blink
+COPY dalite ./dalite
+COPY locale ./locale
+COPY peerinst ./peerinst
+COPY quality ./quality
+COPY reputation ./reputation
+COPY requirements ./requirements
+COPY REST ./REST
+COPY templates ./templates
+COPY tos ./tos
+COPY manage.py .
+COPY gulpfile.js .
 RUN node_modules/gulp/bin/gulp.js build
 
 FROM python:3.8
@@ -31,8 +43,10 @@ COPY --from=static /code/tos ./tos
 COPY --from=static /code/manage.py .
 RUN python3 manage.py collectstatic --clear --noinput
 RUN python3 manage.py compress
+RUN mkdir emails
 
 # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
 RUN groupadd -r container_user && useradd --no-log-init -r -g container_user container_user
 RUN chown -R container_user:container_user /code
+VOLUME /code/emails
 USER container_user

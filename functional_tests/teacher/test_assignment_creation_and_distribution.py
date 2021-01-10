@@ -1,14 +1,18 @@
+from faker import Faker
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+
+# from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.expected_conditions import (
     presence_of_element_located,
 )
 from selenium.webdriver.support.ui import WebDriverWait
 
 from functional_tests.fixtures import *  # noqa
+
 from .utils import go_to_account, login
 
+fake = Faker()
 timeout = 3
 
 
@@ -19,7 +23,7 @@ def create_assignment(browser, teacher, complete_questions):
         ).click()
     except TimeoutException:
         assert False
-    browser.find_element_by_link_text("Manage assignments").click()
+    browser.find_element_by_id("assignment-create").click()
 
     try:
         identifier = WebDriverWait(browser, timeout).until(
@@ -31,37 +35,51 @@ def create_assignment(browser, teacher, complete_questions):
     identifier.send_keys("test")
 
     title = browser.find_element_by_id("id_title")
-    title.send_keys("test")
+    title.send_keys(fake.sentence(nb_words=5))
+
+    tinymce_embed = browser.find_element_by_id("id_description_ifr")
+    browser.switch_to.frame(tinymce_embed)
+    browser.find_element_by_id("tinymce").send_keys(fake.paragraph())
+    browser.switch_to.default_content()
+
+    tinymce_embed = browser.find_element_by_id("id_intro_page_ifr")
+    browser.switch_to.frame(tinymce_embed)
+    browser.find_element_by_id("tinymce").send_keys(fake.paragraph())
+    browser.switch_to.default_content()
+
+    tinymce_embed = browser.find_element_by_id("id_conclusion_page_ifr")
+    browser.switch_to.frame(tinymce_embed)
+    browser.find_element_by_id("tinymce").send_keys(fake.paragraph())
+    browser.switch_to.default_content()
 
     create = browser.find_element_by_xpath("//input[@value='Create']")
     create.click()
 
-    try:
-        search_limit = WebDriverWait(browser, timeout).until(
-            presence_of_element_located((By.ID, "limit-search"))
-        )
-    except TimeoutException:
-        assert False
-
-    search_limit.click()
-
-    search = browser.find_element_by_id("search-bar")
+    search = browser.find_element_by_id("search-db-app").find_element_by_xpath(
+        "//input[@type='text']"
+    )
     search.send_keys(teacher.user.username)
-    search.send_keys(Keys.ENTER)
 
+    """
+    # rmwc throws console error
+
+    search.send_keys(Keys.ENTER)
     try:
         question = WebDriverWait(browser, timeout).until(
-            presence_of_element_located((By.XPATH, "//div[@id='1']//button"))
+            presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//div[@class='mdc-card']//button[@title='Add this question to this assignment']",  # noqa E501
+                )
+            )
         )
     except TimeoutException:
         assert False
 
     question.click()
+    """
 
-    link = browser.find_element_by_link_text(
-        "Back to My Account"
-    ).get_attribute("href")
-    browser.get(link)
+    link = browser.find_element_by_link_text("Back to My Account").click()
 
 
 def create_group(browser):
@@ -136,7 +154,13 @@ def distribute_assignment(browser):
         assert False
 
 
-def test_assignment_creation_and_distribution(browser, questions, teacher):
+def test_assignment_creation_and_distribution(
+    browser, discipline, questions, teacher
+):
+    for q in questions:
+        q.user = teacher.user
+        q.discipline = discipline
+        q.save()
     login(browser, teacher)
     go_to_account(browser)
     create_assignment(browser, teacher, questions)

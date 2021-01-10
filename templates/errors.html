@@ -24,11 +24,13 @@
 <body>
   {% block body %}{% endblock %}
 
+  {% if message %}
   <p>
     {% autoescape off %}
     {{ message }}
     {% endautoescape %}
   </p>
+  {% endif %}
 
   <div class="corner_graphic" id="outer"></div>
   <div class="corner_graphic" id="mid"></div>

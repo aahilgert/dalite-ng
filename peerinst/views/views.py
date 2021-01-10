@@ -8,6 +8,7 @@ import urllib.request
 from datetime import datetime
 
 import pytz
+from course_flow.views import setup_link_to_group, setup_unlink_from_group
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -21,7 +22,6 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count, Q
 from django.db.models.expressions import Func
 from django.forms import Textarea, inlineformset_factory
-
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template import loader
@@ -30,8 +30,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST, require_safe
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView, View
@@ -42,6 +42,7 @@ from django_lti_tool_provider.signals import Signals
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
+from blink.models import BlinkRound
 from dalite.views.errors import response_400, response_404
 
 # tos
@@ -58,8 +59,6 @@ from ..mixins import (
     teacher_tos_accepted_check,
 )
 from ..models import AnswerChoice  # LtiEvent,
-from blink.models import BlinkRound
-
 from ..models import (
     Answer,
     Assignment,
@@ -80,6 +79,7 @@ from ..models import (
     UserUrl,
 )
 from ..models.group import current_semester, current_year
+from ..stopwords import en, fr
 from ..tasks import mail_managers_async
 from ..util import (
     SessionStageData,
@@ -92,9 +92,6 @@ from ..util import (
     report_data_by_student,
     roundrobin,
 )
-from ..stopwords import fr, en
-
-from course_flow.views import setup_link_to_group, setup_unlink_from_group
 
 LOGGER = logging.getLogger(__name__)
 LOGGER_teacher_activity = logging.getLogger("teacher_activity")
@@ -189,9 +186,8 @@ def sign_up(request):
             # Set new users as inactive until verified by an administrator
             form.instance.is_active = False
             form.save()
-            # Notify administrators
 
-            # TODO Adapt to different types of user
+            # TODO: Adapt to different types of user
             NewUserRequest.objects.create(
                 user=form.instance, type=UserType.objects.get(type="teacher")
             )
@@ -199,8 +195,8 @@ def sign_up(request):
                 user=form.instance, url=form.cleaned_data["url"]
             )
 
+            # Notify managers
             email_context = dict(
-                user=form.cleaned_data["username"],
                 date=timezone.now(),
                 email=form.cleaned_data["email"],
                 url=form.cleaned_data["url"],

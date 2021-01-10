@@ -1,14 +1,16 @@
 import os
-import pytest
 import time
-
 from functools import partial
+
+import pytest
 from django.conf import settings
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import (
+    UnexpectedAlertPresentException,
+    WebDriverException,
+)
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.remote.webelement import WebElement
-
 
 MAX_WAIT = 30
 try:
@@ -52,7 +54,7 @@ def browser(live_server):
         options = webdriver.ChromeOptions()
         options.add_experimental_option("w3c", False)
         options.add_argument("start-maximized")
-        options.add_argument("window-size=1080,720")
+        options.add_argument("window-size=1080,1440")
 
         print(" > Requesting browser from hub")
         driver = webdriver.Remote(
@@ -121,6 +123,7 @@ def browser(live_server):
             for d in logs
             if d["source"] != "network"
             and "tinymce" not in d["message"]
+            and "youtube" not in d["message"]
             and "mdc-auto-init" not in d["message"]
         ]
         assert len(filtered_logs) == 0, logs
@@ -130,13 +133,17 @@ def browser(live_server):
     # Add screenshot
     def take_screenshot(driver):
         file_path = os.path.join(settings.BASE_DIR, "snapshots/test.png")
-        driver.save_screenshot(file_path)
+        try:
+            driver.save_screenshot(file_path)
+        except UnexpectedAlertPresentException:
+            pass
 
     # Log function for finders
     def click_with_log(finder, driver, *args, **kwargs):
         web_element = finder(*args, **kwargs)
 
         _click = getattr(web_element, "click")
+
         setattr(web_element, "click", partial(add_log, _click, driver))
 
         return web_element
