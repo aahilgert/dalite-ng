@@ -122,7 +122,7 @@ services:
     build:
       context: .
       dockerfile: ./functional_tests/Dockerfile
-    command: pytest functional_tests/student --reuse-db --ignore=node_modules/ -vvvv --exitfirst -s
+    command: pytest functional_tests/teacher --reuse-db --ignore=node_modules/ -vvvv --exitfirst -s
     depends_on:
       - selenium-hub
       - chrome

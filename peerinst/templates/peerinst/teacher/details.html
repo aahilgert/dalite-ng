@@ -73,8 +73,9 @@
       </h2>
       <div class="foldable--body">
         <div class="admin-link">
-            <a href="{% url 'teacher-assignments' teacher.id %}">{% trans 'Manage assignments' %}</a>
-            <span class="links-divider">|</span><a href="{% url 'report_selector' %}">{% trans 'Custom reports' %}</a>
+          <a href="{% url 'assignment-create' %}" id="assignment-create">{% trans 'Create new' %}</a>
+          <span class="links-divider">|</span><a href="{% url 'teacher-assignments' teacher.id %}">{% trans 'Manage assignments' %}</a>
+          <span class="links-divider">|</span><a href="{% url 'report_selector' %}">{% trans 'Custom reports' %}</a>
         </div>
         {% if not object.assignments.all %}
         <p class='mdc-typography--body1'>{% blocktrans %}You do not have any assignments.{% endblocktrans %}</p>

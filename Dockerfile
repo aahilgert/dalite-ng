@@ -7,7 +7,19 @@ RUN mkdir /code
 WORKDIR /code
 COPY package*.json ./
 RUN npm i
-COPY . /code/
+COPY analytics ./analytics
+COPY blink ./blink
+COPY dalite ./dalite
+COPY locale ./locale
+COPY peerinst ./peerinst
+COPY quality ./quality
+COPY reputation ./reputation
+COPY requirements ./requirements
+COPY REST ./REST
+COPY templates ./templates
+COPY tos ./tos
+COPY manage.py .
+COPY gulpfile.js .
 RUN node_modules/gulp/bin/gulp.js build
 
 FROM python:3.8
