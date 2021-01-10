@@ -20,6 +20,59 @@ import "@rmwc/select/node_modules/@material/select/dist/mdc.select.min.css";
 import { get, submitData } from "../_ajax/ajax.js";
 import { QuestionCard, Favourites, User } from "./question.js";
 
+export class SearchBar extends Component {
+  state = {
+    searchTerms: "",
+  };
+
+  render() {
+    return (
+      <div>
+        <div style={{ marginBottom: "20px", marginTop: "20px" }}>
+          <TextField
+            withLeadingIcon={<TextFieldIcon icon="search" theme="secondary" />}
+            withTrailingIcon={
+              <TextFieldIcon
+                tabIndex="0"
+                icon="close"
+                onClick={() =>
+                  this.setState(
+                    { searchTerms: "" },
+                    this.props.handleSubmit(
+                      new Event("init", { type: "init" }),
+                    ),
+                  )
+                }
+                theme="primary"
+                style={
+                  this.state.searchTerms.length > 0
+                    ? {}
+                    : { opacity: "0", pointerEvents: "none" }
+                }
+              />
+            }
+            label={this.props.gettext("Type search terms")}
+            value={this.state.searchTerms}
+            onInput={(evt) => {
+              this.setState({ searchTerms: evt.target.value });
+            }}
+            onKeyPress={(evt) => {
+              this.props.handleSubmit(evt, this.state.searchTerms);
+            }}
+            theme="secondary"
+            outlined
+          />
+          <TextFieldHelperText persistent>
+            {this.props.gettext(
+              "The quick add search engine checks question meta data for the complete phrase only.  You can also search on username to find all content from a certain contributor.  Search results are filtered to remove questions already part of this assignment.",
+            )}
+          </TextFieldHelperText>
+        </div>
+      </div>
+    );
+  }
+}
+
 export class SearchDbApp extends Component {
   /* Expects a paginated response from server */
   state = {
@@ -27,7 +80,6 @@ export class SearchDbApp extends Component {
     favourites: [],
     questions: [],
     searching: false,
-    searchTerms: "",
     selectedDiscipline: this.props.defaultDiscipline,
     snackbarIsOpen: false,
     snackbarMessage: "",
@@ -74,9 +126,9 @@ export class SearchDbApp extends Component {
     this.handleSubmit(new Event("init", { type: "init" }));
   };
 
-  handleSubmit = (evt) => {
+  handleSubmit = (evt, searchTerms = "") => {
     if (
-      (this.state.searchTerms != "" && evt.type === "change") |
+      (searchTerms != "" && evt.type === "change") |
       (evt.type === "init") |
       (evt.key === "Enter")
     ) {
@@ -85,7 +137,7 @@ export class SearchDbApp extends Component {
         const queryString = new URLSearchParams({
           assignment_id: this.props.assignment,
           discipline: this.state.selectedDiscipline,
-          search_string: this.state.searchTerms,
+          search_string: searchTerms,
         });
         const url = `${this.props.searchURL}?${queryString.toString()}`;
 
@@ -181,66 +233,32 @@ export class SearchDbApp extends Component {
       );
     }
     return (
-      <div>
-        <div style={{ marginBottom: "20px", marginTop: "20px" }}>
-          <TextField
-            withLeadingIcon={<TextFieldIcon icon="search" theme="secondary" />}
-            withTrailingIcon={
-              <TextFieldIcon
-                tabIndex="0"
-                icon="close"
-                onClick={() =>
-                  this.setState(
-                    { searchTerms: "" },
-                    this.handleSubmit(new Event("init", { type: "init" })),
-                  )
-                }
-                theme="primary"
-                style={
-                  this.state.searchTerms.length > 0
-                    ? {}
-                    : { opacity: "0", pointerEvents: "none" }
-                }
-              />
-            }
-            label={this.props.gettext("Type search terms")}
-            value={this.state.searchTerms}
-            onInput={(evt) => {
-              this.setState({ searchTerms: evt.target.value });
-            }}
-            onKeyPress={this.handleSubmit}
-            theme="secondary"
-            outlined
-          />
-          <TextFieldHelperText persistent>
-            {this.props.gettext(
-              "The quick add search engine checks question meta data for the complete phrase only.  You can also search on username to find all content from a certain contributor.  Search results are filtered to remove questions already part of this assignment.",
-            )}
-          </TextFieldHelperText>
-        </div>
-        <div style={{ marginBottom: "20px" }}>
-          <Select
-            value={this.state.selectedDiscipline}
-            onChange={(e) => {
-              this.setState(
-                {
-                  selectedDiscipline: e.target.value,
-                },
-                this.handleSubmit(e),
-              );
-            }}
-            outlined
-            options={this.state.disciplines.map((d) => {
-              return { label: d.title, value: d.pk };
-            })}
-            style={{ appearance: "none" }}
-          />
-          <SelectHelperText persistent>
-            {this.props.gettext(
-              "Search results will only include questions in the selected discipline.",
-            )}
-          </SelectHelperText>
-        </div>
+      <div style={{ marginBottom: "20px" }}>
+        <SearchBar
+          gettext={this.props.gettext}
+          handleSubmit={this.handleSubmit}
+        />
+        <Select
+          value={this.state.selectedDiscipline}
+          onChange={(e) => {
+            this.setState(
+              {
+                selectedDiscipline: e.target.value,
+              },
+              this.handleSubmit(e),
+            );
+          }}
+          outlined
+          options={this.state.disciplines.map((d) => {
+            return { label: d.title, value: d.pk };
+          })}
+          style={{ appearance: "none" }}
+        />
+        <SelectHelperText persistent>
+          {this.props.gettext(
+            "Search results will only include questions in the selected discipline.",
+          )}
+        </SelectHelperText>
       </div>
     );
   };
