@@ -143,6 +143,7 @@ def browser(live_server):
         web_element = finder(*args, **kwargs)
 
         _click = getattr(web_element, "click")
+
         setattr(web_element, "click", partial(add_log, _click, driver))
 
         return web_element

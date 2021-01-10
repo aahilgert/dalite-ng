@@ -294,11 +294,9 @@
       </h2>
       <div class="foldable--body">
         <div class="admin-link">
-          {% if user.is_staff %}
-          <a href="{% url 'admin_index_wrapper' %}">Click here to access admin</a>
-          <span class="links-divider">|</span>{% endif %}<a href="{% url 'collection-list' %}">{% trans 'All Collections' %}</a>
+          <a href="{% url 'collection-create' %}">{% trans 'Create new' %}</a>
+          <span class="links-divider">|</span><a href="{% url 'collection-list' %}">{% trans 'All Collections' %}</a>
           <span class="links-divider">|</span><a href="{% url 'followed-collection-list' %}">{% trans 'Followed Collections' %}</a>
-          <span class="links-divider">|</span><a href="{% url 'collection-create' %}">{% trans 'Create' %}</a>
         </div>
         {% if not owned_collections %}
         <p class='mdc-typography--body1'>{% blocktrans %}You do not have any collections.{% endblocktrans %}</p>

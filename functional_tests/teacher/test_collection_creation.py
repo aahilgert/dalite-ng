@@ -1,15 +1,16 @@
+import time
+
+from django.urls import reverse
 from faker import Faker
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.expected_conditions import (
     presence_of_element_located,
 )
-from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support.ui import Select, WebDriverWait
 
 from functional_tests.fixtures import *  # noqa
-from .utils import accept_cookies, login
-from django.urls import reverse
-import time
 
+from .utils import accept_cookies, login
 
 fake = Faker()
 timeout = 3
@@ -28,11 +29,16 @@ def create_collection(browser, assert_, teacher):
     assert browser.current_url.endswith("create/")
 
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert "Create a Collection" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Create a Collection" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
+    )
 
     assert (
         "Please use this page to create your collection of assignments."
-        in browser.find_element_by_tag_name("p").text
+        in browser.page_source
     )
 
     assert "Title" in browser.page_source
@@ -70,7 +76,9 @@ def create_collection(browser, assert_, teacher):
     )
 
     assert "Collection Statistics" in browser.page_source
-    assert title in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [title == h2.text for h2 in browser.find_elements_by_tag_name("h2")]
+    )
     assert description in browser.find_element_by_id("obj.desc").text
     assert ("Created by") in browser.find_element_by_class_name(
         "mdc-typography--caption"
@@ -85,13 +93,16 @@ def create_collection(browser, assert_, teacher):
     )
 
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert (
-        "Edit Your Collection" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Edit Your Collection" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
     )
 
     assert (
         "Please use this page to edit your collection of assignments."
-        in browser.find_element_by_tag_name("p").text
+        in browser.page_source
     )
 
     assert "Title" in browser.page_source
@@ -119,7 +130,12 @@ def create_collection(browser, assert_, teacher):
 
     assert "Collection Statistics" in browser.page_source
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert title_update in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            title_update == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
+    )
     assert description_update in browser.find_element_by_id("obj.desc").text
     assert ("Created by") in browser.find_element_by_class_name(
         "mdc-typography--caption"
@@ -132,10 +148,15 @@ def create_collection(browser, assert_, teacher):
     )
 
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert "Delete Collection" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Delete Collection" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
+    )
     assert (
         "Are you sure you would like to delete your collection of assignments?"
-        in browser.find_element_by_tag_name("p").text
+        in browser.page_source
     )
     assert (
         "You will be unable to retrieve any information regarding this collect"
@@ -146,7 +167,12 @@ def create_collection(browser, assert_, teacher):
     browser.find_element_by_id("id_delete").click()
     # assure user is on correct list view
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert "Browse Collections" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Browse Collections" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
+    )
     # assure collection has been deleted
     assert browser.current_url.endswith("collection/list/")
     assert description not in browser.page_source
@@ -154,26 +180,42 @@ def create_collection(browser, assert_, teacher):
     browser.find_element_by_link_text("Featured").click()
     # assure user is on list view
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert (
-        "Featured Collections" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Featured Collections" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
     )
     # go to personal list view
     browser.find_element_by_link_text("Owned").click()
     # assure user is on list view
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert "Your Collections" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Your Collections" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
+    )
     # go to followed list view
     browser.find_element_by_link_text("Followed").click()
     # assure user is on list view
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert (
-        "Followed Collections" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Your Followed Collections" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
     )
     # go to general list view
     browser.find_element_by_link_text("All").click()
     # assure user is on list view
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert "Browse Collections" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Browse Collections" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
+    )
 
 
 def collection_buttons(
@@ -192,13 +234,16 @@ def collection_buttons(
     )
 
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert (
-        "Edit Your Collection" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Edit Your Collection" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
     )
 
     assert (
         "Please use this page to edit your collection of assignments."
-        in browser.find_element_by_tag_name("p").text
+        in browser.page_source
     )
 
     assert "Title" in browser.page_source
@@ -231,8 +276,11 @@ def collection_buttons(
     browser.find_element_by_link_text("Followed Collections").click()
     # assure user is on list view
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert (
-        "Followed Collections" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Your Followed Collections" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
     )
     # assure that collection is displayed in list view
     assert description in browser.page_source
@@ -251,15 +299,23 @@ def collection_buttons(
     browser.find_element_by_link_text("View Collections").click()
     # assure user is on list view
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert "Browse Collections" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Browse Collections" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
+    )
     # assure that collection is displayed in list view
     assert description in browser.page_source
     # go to followed collections list view
     browser.find_element_by_link_text("Followed").click()
     # assure user is on list view
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert (
-        "Followed Collections" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Your Followed Collections" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
     )
     # assure that collection is not displayed in list view
     assert description not in browser.page_source
@@ -267,7 +323,12 @@ def collection_buttons(
     browser.find_element_by_link_text("Owned").click()
     # assure user is on list view
     assert "Collections" in browser.find_element_by_tag_name("h1").text
-    assert "Your Collections" in browser.find_element_by_tag_name("h2").text
+    assert any(
+        [
+            "Your Collections" == h2.text
+            for h2 in browser.find_elements_by_tag_name("h2")
+        ]
+    )
     # assure that collection is displayed in list view
     assert description in browser.page_source
     # click on collection card
@@ -293,7 +354,7 @@ def collection_buttons(
     # assure button changes to assign
     assert "ASSIGN" in browser.find_element_by_tag_name("button").text
     # go to group
-    time.sleep(6)
+    time.sleep(2)
     browser.find_element_by_id("group-title").click()
     # assure on group detail view
     assert (
