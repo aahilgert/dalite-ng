@@ -28,7 +28,7 @@ channels-redis==3.1.0     # via -r requirements/../blink/requirements.txt
 channels==2.4.0           # via -r requirements/../blink/requirements.txt, channels-redis
 chardet==3.0.4            # via requests
 constantly==15.1.0        # via -r requirements/../blink/requirements.txt, twisted
-cryptography==3.2.1       # via -r requirements/../blink/requirements.txt, autobahn, pyopenssl, service-identity
+cryptography==3.3.1       # via -r requirements/../blink/requirements.txt, autobahn, pyopenssl, service-identity
 cssutils==1.0.2           # via pynliner
 daphne==2.5.0             # via -r requirements/../blink/requirements.txt, channels
 django-analytical==2.5.0  # via -r requirements/requirements-base.in
@@ -60,7 +60,7 @@ incremental==17.5.0       # via -r requirements/../blink/requirements.txt, twist
 jsonfield==3.1.0          # via django-lti-tool-provider
 kombu==4.6.7              # via celery
 lti==0.9.4                # via django-lti-tool-provider
-lxml==4.6.1               # via -r requirements/requirements-base.in, lti
+lxml==4.6.2               # via -r requirements/requirements-base.in, lti
 msgpack==1.0.0            # via -r requirements/../blink/requirements.txt, channels-redis
 mysqlclient==1.4.6        # via -r requirements/requirements-base.in
 numpy==1.18.1             # via pandas

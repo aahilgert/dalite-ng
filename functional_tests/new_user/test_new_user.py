@@ -6,9 +6,11 @@ from tos.models import Role, Tos
 
 
 def test_new_user_signup_workflow(
-    browser, assert_, admin, mailoutbox, settings
+    browser, assert_, admin, mail_outbox, settings
 ):
-    settings.ADMINS = (admin.username, admin.email)
+    admin.username = settings.MANAGERS[0][0]
+    admin.email = settings.MANAGERS[0][1]
+    admin.save()
 
     # Hit landing page
     browser.get(browser.server_url + "/#Features")
@@ -18,7 +20,6 @@ def test_new_user_signup_workflow(
             "Features" in browser.find_element_by_tag_name("h1").text
         )
     )
-
     browser.wait_for(
         lambda: assert_(
             "Login"
@@ -42,7 +43,7 @@ def test_new_user_signup_workflow(
     assert form.get_attribute("method").lower() == "post"
 
     inputbox = browser.find_element_by_id("id_email")
-    inputbox.send_keys("test@test.com")
+    inputbox.send_keys("test@mydalite.org")
 
     inputbox = browser.find_element_by_id("id_username")
     inputbox.send_keys("test")
@@ -76,12 +77,15 @@ def test_new_user_signup_workflow(
         )
     )
 
-    # Admins receive notification
-    assert len(mailoutbox) == 1
-    assert list(mailoutbox[0].to) == [a[1] for a in settings.ADMINS]
+    # Managers receive a notification
+    assert len(mail_outbox) == 1
+    for manager in settings.MANAGERS:
+        assert manager[1] in mail_outbox[0].to
 
-    # Admin approves on their dashboard
-    m = re.search("http[s]*://.*/dashboard/", mailoutbox[0].body)
+    # Manager approves on their dashboard
+    m = re.search(
+        "http[s]*://.*/.*/admin/saltise/new-user-approval", mail_outbox[0].body
+    )
     dashboard_link = m.group(0)
     browser.get(dashboard_link)
 
@@ -89,25 +93,26 @@ def test_new_user_signup_workflow(
     inputbox.send_keys(admin.username)
 
     inputbox = browser.find_element_by_id("id_password")
-    inputbox.send_keys("default_password")
+    inputbox.send_keys(settings.DEFAULT_PASSWORD)
 
-    browser.find_element_by_id("submit-btn").click()
+    browser.find_element_by_xpath("//input[@type='submit']").click()
 
-    browser.wait_for(lambda: assert_("Inactive users" in browser.page_source))
+    browser.wait_for(
+        lambda: assert_("New user approval" in browser.page_source)
+    )
 
-    form = browser.find_element_by_xpath("//form[contains(@id, 'activate')]")
-    browser.find_element_by_xpath("//input[@type='checkbox']").click()
-    form.submit()
+    browser.find_element_by_class_name("user__approve").click()
 
     browser.wait_for(lambda: assert_("No users to add" in browser.page_source))
 
     browser.get(browser.server_url + "/logout")
 
-    # Notification email is sent to teacher
-    assert len(mailoutbox) == 2
-    assert list(mailoutbox[1].to) == ["test@test.com"]
+    # Account verification email is sent to new user
+    assert len(mail_outbox) == 2
+    assert list(mail_outbox[0].to) == ["test@mydalite.org"]
 
-    m = re.search("http[s]*://.*/reset/.*", mailoutbox[1].body)
+    # Password reset email is sent to teacher
+    m = re.search("http[s]*://.*/reset/.*", mail_outbox[0].body)
     verification_link = m.group(0)
     browser.get(verification_link)
 
@@ -139,36 +144,6 @@ def test_new_user_signup_workflow(
 
     # Redirected to dashboard
     assert browser.current_url.endswith("dashboard/")
-
-
-def test_new_user_signup_with_email_server_error(browser, assert_, settings):
-    settings.EMAIL_BACKEND = ""
-
-    browser.get(browser.server_url + "/signup")
-
-    browser.find_element_by_id("accept-cookies").click()
-
-    form = browser.find_element_by_tag_name("form")
-    assert form.get_attribute("method") == "post"
-
-    inputbox = browser.find_element_by_id("id_email")
-    inputbox.send_keys("test@test.com")
-
-    inputbox = browser.find_element_by_id("id_username")
-    inputbox.send_keys("test")
-
-    inputbox = browser.find_element_by_id("id_url")
-    inputbox.clear()
-    inputbox.send_keys("http://www.mydalite.org")
-
-    browser.find_element_by_id("submit-btn").click()
-
-    browser.wait_for(
-        lambda: assert_(
-            "An error occurred while processing your request"
-            in browser.page_source
-        )
-    )
 
 
 def test_inactive_user_login(browser, assert_, inactive_user):

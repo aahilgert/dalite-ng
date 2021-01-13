@@ -1,4 +1,8 @@
+from faker import Faker
+
 from peerinst.models import Discipline, Question, RationaleOnlyQuestion
+
+fake = Faker()
 
 
 def new_questions(n, teacher):
@@ -7,8 +11,8 @@ def new_questions(n, teacher):
         while True:
             i += 1
             yield {
-                "title": "question{}".format(i),
-                "text": "question{}".format(i),
+                "title": fake.sentence(),
+                "text": fake.paragraph(),
                 "user": teacher.user,
             }
 
@@ -21,7 +25,7 @@ def new_disciplines(n):
         i = 0
         while True:
             i += 1
-            yield {"title": "discipline{}".format(i)}
+            yield {"title": fake.word()}
 
     gen = generator()
     return [next(gen) for _ in range(n)]

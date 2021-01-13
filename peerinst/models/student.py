@@ -1,13 +1,14 @@
 import logging
 from datetime import datetime
 from operator import itemgetter
+from urllib.parse import urlparse
 
 import pytz
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.urls import reverse
 from django.db import IntegrityError, models
 from django.template import loader
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from reputation.models import Reputation
@@ -130,19 +131,21 @@ class Student(models.Model):
 
             else:
 
-                host = settings.ALLOWED_HOSTS[0]
-
-                if host == "localhost" or host == "127.0.0.1":
-                    protocol = "http"
-                    host = "{}:{}".format(host, settings.DEV_PORT)
-                else:
-                    protocol = "https"
-
                 token = create_student_token(username, user_email)
 
-                signin_link = "{}://{}{}?token={}".format(
-                    protocol, host, reverse("student-page"), token
-                )
+                if request:
+                    signin_link = "{}://{}{}?token={}".format(
+                        request.scheme,
+                        request.get_host(),
+                        reverse("student-page"),
+                        token,
+                    )
+                else:
+                    signin_link = "{}{}?token={}".format(
+                        settings.DEFAULT_SCHEME_HOST_PORT,
+                        reverse("student-page"),
+                        token,
+                    )
 
                 group = group.title if group is not None else None
 
@@ -189,7 +192,7 @@ class Student(models.Model):
 
         return err
 
-    def join_group(self, group, mail_type=None):
+    def join_group(self, group, mail_type=None, request=None):
         """
         Join the given group, adding missing assignments and sending an email.
 
@@ -227,7 +230,7 @@ class Student(models.Model):
             self.add_assignment(assignment, send_email=False)
 
         if mail_type is not None:
-            self.send_email(mail_type, group=group)
+            self.send_email(mail_type, group=group, request=request)
 
         # TODO to remove eventually when groups are fully integrated in
         # group membership
@@ -404,7 +407,7 @@ class StudentAssignment(models.Model):
     def __str__(self):
         return "{} for {}".format(self.group_assignment, self.student)
 
-    def send_email(self, mail_type):
+    def send_email(self, mail_type, request=None):
         """
         Sends an email to announce a new assignment or an assignment update.
 
@@ -441,19 +444,20 @@ class StudentAssignment(models.Model):
                 and group_membership.current_member
             ):
 
-                host = settings.ALLOWED_HOSTS[0]
-
-                if host == "localhost" or host == "127.0.0.1":
-                    protocol = "http"
-                    host = "{}:{}".format(host, settings.DEV_PORT)
-                else:
-                    protocol = "https"
-
                 token = create_student_token(username, user_email)
 
+                if request:
+                    protocol = request.scheme
+                    host = request.get_host()
+                else:
+                    _url = urlparse(settings.DEFAULT_SCHEME_HOST_PORT)
+                    protocol = _url.scheme
+                    host = _url.hostname
+
                 signin_link = "{}://{}{}?token={}".format(
-                    protocol, host, reverse("student-page"), token
+                    protocol, host, reverse("student-page"), token,
                 )
+
                 assignment_link = "{}://{}{}".format(
                     protocol,
                     host,

@@ -14,6 +14,7 @@ __all__ = [
     "min_words_criterion",
     "min_words_rules",
     "new_teacher",
+    "mail_outbox",
     "quality_min_words",
     "questions",
     "realistic_questions",
@@ -30,6 +31,7 @@ __all__ = [
     "undistributed_assignment",
 ]
 
+from .emails_ import mail_outbox
 from .forums_ import forum, forums
 from .peerinst_ import (
     admin,

@@ -11,7 +11,7 @@ from peerinst.students import (
 )
 
 
-def signin(browser, student, mailoutbox, new=False):
+def signin(browser, student, mail_outbox, new=False):
     email = student.student.email
 
     browser.get("{}{}".format(browser.server_url, reverse("login")))
@@ -24,11 +24,11 @@ def signin(browser, student, mailoutbox, new=False):
     input_.send_keys(email)
     input_.send_keys(Keys.ENTER)
 
-    assert len(mailoutbox) == 1
-    assert list(mailoutbox[0].to) == [email]
+    assert len(mail_outbox) == 1
+    assert list(mail_outbox[0].to) == [email]
 
     m = re.search(
-        "http[s]*://.*/student/\?token=.*", mailoutbox[0].body
+        r"http[s]*://.*/student/\?token=.*", mail_outbox[0].body
     )  # noqa W605
     signin_link = m.group(0)
 
@@ -46,7 +46,7 @@ def signin(browser, student, mailoutbox, new=False):
 def access_logged_in_account_from_landing_page(browser, student):
     browser.get(browser.server_url)
     link = browser.find_element_by_link_text(
-        "Welcome back {}".format(student.student.email)
+        "Welcome back, {}".format(student.student.email)
     )
     link.click()
     assert re.search(r"student/", browser.current_url)
@@ -56,17 +56,14 @@ def logout(browser, assert_):
     icon = browser.find_element_by_xpath("//i[contains(text(), 'menu')]")
     icon.click()
 
-    logout_button = browser.find_element_by_link_text("Logout")
+    logout_button = browser.find_element_by_id("logout")
     browser.wait_for(assert_(logout_button.is_enabled()))
     # FIXME:
     # Assertion shoud include logout_button.is_displayed() but throws w3c error
     time.sleep(2)
     logout_button.click()
 
-    assert browser.current_url == browser.server_url + "/en/"
-
-    browser.find_element_by_link_text("Login")
-    browser.find_element_by_link_text("Signup")
+    assert browser.current_url == browser.server_url + "/en/login/"
 
 
 def consent_to_tos(browser):
@@ -96,12 +93,12 @@ def test_fake_link(browser):
     browser.find_element_by_xpath("//*[contains(text(), '{}')]".format(err))
 
 
-def test_student_login_logout(browser, assert_, mailoutbox, student):
-    signin(browser, student, mailoutbox, new=False)
+def test_student_login_logout(browser, assert_, mail_outbox, student):
+    signin(browser, student, mail_outbox, new=False)
     access_logged_in_account_from_landing_page(browser, student)
     logout(browser, assert_)
 
 
-def test_new_student_login(browser, student_new, mailoutbox):
-    signin(browser, student_new, mailoutbox, new=True)
+def test_new_student_login(browser, student_new, mail_outbox):
+    signin(browser, student_new, mail_outbox, new=True)
     consent_to_tos(browser)

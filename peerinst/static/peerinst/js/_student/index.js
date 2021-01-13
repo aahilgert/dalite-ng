@@ -579,6 +579,7 @@ function groupAssignmentView(assignment, group) {
   title.classList.add("student-group--assignment-title");
   const titleText = document.createElement("span");
   titleText.title = model.translations.goToAssignment;
+  titleText.classList.add("student-group--assignment-link");
   titleText.textContent = assignment.title;
   titleText.addEventListener("click", (event: MouseEvent) =>
     goToAssignment(group, assignment),

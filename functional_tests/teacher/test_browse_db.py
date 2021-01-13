@@ -7,7 +7,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from functional_tests.fixtures import *  # noqa
-from .utils import accept_cookies, go_to_account, login, MAX_WAIT
+
+from .utils import MAX_WAIT, accept_cookies, go_to_account, login
 
 
 def search(browser, assert_, realistic_questions):
@@ -57,6 +58,7 @@ def search(browser, assert_, realistic_questions):
     ActionChains(browser).move_to_element(top).click(toggle).perform()
 
     # Assert visible
+    ActionChains(browser).move_to_element(fav_btn)
     assert browser.find_elements_by_class_name("question-answers")[
         0
     ].is_displayed()

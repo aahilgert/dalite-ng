@@ -15,9 +15,7 @@
     </h1>
     <div>
       <div class="admin-link">
-        {% if user.is_staff %}
-        <a href="{% url 'admin_index_wrapper' %}">Click here to access admin</a>
-        <span class="links-divider">|</span>{% endif %}<a href="{% url 'teacher' request.user.teacher.pk %}">{% trans 'Back to My Account' %}</a>
+        <a href="{% url 'teacher' request.user.teacher.pk %}">{% trans 'Back to My Account' %}</a>
         <span class="links-divider">|</span><a href="{% url 'collection-list' %}">{% trans 'View Collections' %}</a>
       </div>
     </div>

@@ -1,6 +1,5 @@
 import factory
 import pytest
-
 from pinax.forums.models import Forum
 
 

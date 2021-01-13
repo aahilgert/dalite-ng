@@ -14,11 +14,10 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 
 from functional_tests.fixtures import *  # noqa
 
-
 timeout = 1
 
 
-def signin(browser, student, mailoutbox):
+def signin(browser, student, mail_outbox):
     email = student.student.email
 
     browser.get("{}{}".format(browser.server_url, reverse("login")))
@@ -31,11 +30,11 @@ def signin(browser, student, mailoutbox):
     input_.send_keys(email)
     input_.send_keys(Keys.ENTER)
 
-    assert len(mailoutbox) == 1
-    assert list(mailoutbox[0].to) == [email]
+    assert len(mail_outbox) == 1
+    assert list(mail_outbox[0].to) == [email]
 
     m = re.search(
-        "http[s]*://.*/student/\?token=.*", mailoutbox[0].body
+        r"http[s]*://.*/student/\?token=.*", mail_outbox[0].body
     )  # noqa W605
     signin_link = m.group(0)
 
@@ -352,10 +351,10 @@ def change_student_id(browser):
 #  assert bubble.text == "Copied to clipboard!"
 
 
-def test_index_workflow(browser, student, group, mailoutbox):
+def test_index_workflow(browser, student, group, mail_outbox):
     group.student_id_needed = True
     group.save()
-    signin(browser, student, mailoutbox)
+    signin(browser, student, mail_outbox)
     join_group_with_link(browser, group)
     leave_group(browser, group)
     join_old_group(browser, group)

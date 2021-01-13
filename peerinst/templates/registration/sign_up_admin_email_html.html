@@ -6,19 +6,18 @@
 
 <h1>{% trans "New User Request" %}</h1>
 
-<p>{% trans "Dear administrator," %}</p>
+<p>{% trans "Dear administrator" %},</p>
 
 <p>{% trans "A new user was created on " %}{{ date }}</p>
 
 <ul>
-  <li>{% trans "Username" %}: {{ user }} </li>
   <li>{% trans "Email" %}: {{ email }} </li>
   <li>{% trans "Verification url" %}: {{ url }} </li>
 </ul>
 
 <p>{% trans "Access your administrator account to activate this new user at:" %}</p>
 
-<p>https://{{ request.get_host }}{% url 'saltise-admin:new-user-approval' %}</p>
+<p>{{ request.scheme }}://{{ request.get_host }}{% url 'saltise-admin:new-user-approval' %}</p>
 
 <p>{% trans 'Cheers'%},</p>
 

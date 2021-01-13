@@ -73,8 +73,9 @@
       </h2>
       <div class="foldable--body">
         <div class="admin-link">
-            <a href="{% url 'teacher-assignments' teacher.id %}">{% trans 'Manage assignments' %}</a>
-            <span class="links-divider">|</span><a href="{% url 'report_selector' %}">{% trans 'Custom reports' %}</a>
+          <a href="{% url 'assignment-create' %}" id="assignment-create">{% trans 'Create new' %}</a>
+          <span class="links-divider">|</span><a href="{% url 'teacher-assignments' teacher.id %}">{% trans 'Manage assignments' %}</a>
+          <span class="links-divider">|</span><a href="{% url 'report_selector' %}">{% trans 'Custom reports' %}</a>
         </div>
         {% if not object.assignments.all %}
         <p class='mdc-typography--body1'>{% blocktrans %}You do not have any assignments.{% endblocktrans %}</p>
@@ -293,11 +294,9 @@
       </h2>
       <div class="foldable--body">
         <div class="admin-link">
-          {% if user.is_staff %}
-          <a href="{% url 'admin_index_wrapper' %}">Click here to access admin</a>
-          <span class="links-divider">|</span>{% endif %}<a href="{% url 'collection-list' %}">{% trans 'All Collections' %}</a>
+          <a href="{% url 'collection-create' %}">{% trans 'Create new' %}</a>
+          <span class="links-divider">|</span><a href="{% url 'collection-list' %}">{% trans 'All Collections' %}</a>
           <span class="links-divider">|</span><a href="{% url 'followed-collection-list' %}">{% trans 'Followed Collections' %}</a>
-          <span class="links-divider">|</span><a href="{% url 'collection-create' %}">{% trans 'Create' %}</a>
         </div>
         {% if not owned_collections %}
         <p class='mdc-typography--body1'>{% blocktrans %}You do not have any collections.{% endblocktrans %}</p>
@@ -535,7 +534,7 @@
       if (localStorage.getItem('collapse-'+container.find("h2").attr('id')) === 'false') {
         $(this).addClass('foldable__unfolded');
       }
-      container.find("h2").click(function() {
+      container.find("h2").on("click", function() {
         const state = localStorage.getItem('collapse-'+$(this).attr('id'));
         localStorage.setItem('collapse-'+$(this).attr('id'), state === 'false' ? 'true' : 'false');
       })

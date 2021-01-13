@@ -68,14 +68,14 @@
     form = document.getElementById("id_disciplines");
     if (form) {
       document.getElementById("update-identity").disabled = false;
-      $("#show_discipline_form").click(function() {
+      $("#show_discipline_form").on("click", function() {
         document.getElementById("update-identity").disabled = true;
       });
     }
   }
 
   window.addEventListener("load", function() {
-    $("#show_discipline_form").click(function() {
+    $("#show_discipline_form").on("click", function() {
       document.getElementById("update-identity").disabled = true;
     });
 
