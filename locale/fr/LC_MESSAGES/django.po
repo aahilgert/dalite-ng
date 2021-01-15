@@ -1714,7 +1714,7 @@ msgstr "Critères d'admissibilté"
 #: tos/templates/tos/email_modify.html:60
 #: tos/templates/tos/email_modify.html:112
 msgid "Save"
-msgstr "Sauvgarder"
+msgstr "Sauvegarder"
 
 #: peerinst/templates/peerinst/group/assignment.html:145
 #, fuzzy
@@ -1869,7 +1869,7 @@ msgstr "Suivante"
 #: peerinst/templates/peerinst/question/answer_choice_form.html:114
 #: peerinst/templates/peerinst/question/form.html:424
 msgid "Save and next"
-msgstr "Sauvgarder et Suivant"
+msgstr "Sauvegarder et Suivant"
 
 #: peerinst/templates/peerinst/question/answer_choice_form.html:124
 #: peerinst/templates/peerinst/question/form.html:438
