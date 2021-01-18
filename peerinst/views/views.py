@@ -2428,6 +2428,14 @@ def report(request, assignment_id="", group_id=""):
     else:
         student_groups = teacher.current_groups.all().values_list("pk")
 
+    # Ensure only groups belonging to teacher are retained, if empty redirect
+    student_groups = teacher.current_groups.filter(
+        pk__in=student_groups
+    ).values_list("pk")
+
+    if len(student_groups) == 0:
+        return HttpResponseRedirect(reverse("report_selector"))
+
     if request.GET.getlist("assignments"):
         assignment_list = request.GET.getlist("assignments")
     elif assignment_id:
