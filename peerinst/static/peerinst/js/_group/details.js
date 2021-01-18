@@ -62,7 +62,7 @@ function initModel(data: InitialData): void {
 
 async function update(): Promise<void> {
   model.students.forEach((student) => {
-    getStudentInformation(student);
+    // getStudentInformation(student);
   });
 }
 
@@ -116,53 +116,53 @@ export async function createCollection(
   window.location.assign(collectionUpdateUrl.replace("0", `${data.pk}`));
 }
 
-async function getStudentInformation(student: Student): Promise<void> {
-  const req = buildReq({ id: student.id }, "post");
-
-  const resp = await fetch(model.urls.getStudentInformationUrl, req);
-  if (!resp.ok) {
-    console.log(resp);
-    return;
-  }
-
-  const data = await resp.json();
-  student.email = data.email;
-  student.lastLogin = new Date(data.last_login);
-  student.criteria = data.criteria;
-
-  studentListTableView(student);
-}
+// async function getStudentInformation(student: Student): Promise<void> {
+//   const req = buildReq({ id: student.id }, "post");
+//
+//   const resp = await fetch(model.urls.getStudentInformationUrl, req);
+//   if (!resp.ok) {
+//     console.log(resp);
+//     return;
+//   }
+//
+//   const data = await resp.json();
+//   student.email = data.email;
+//   student.lastLogin = new Date(data.last_login);
+//   student.criteria = data.criteria;
+//
+//   studentListTableView(student);
+// }
 
 /********/
 /* view */
 /********/
 
-function studentListTableView(student: Student): void {
-  const criteria = [
-    ...document.querySelectorAll("#student-reputation-table th"),
-  ]
-    .slice(2)
-    .map((header) => header.getAttribute("name"));
-  // $FlowFixMe
-  const table = $("#student-reputation-table").DataTable(); // eslint-disable-line
-  table.row
-    .add([
-      ...[
-        student.email,
-        student.lastLogin
-          ? student.lastLogin.toLocaleString(model.language, {
-              month: "short", // eslint-disable-line
-              day: "numeric", // eslint-disable-line
-              year: "numeric", // eslint-disable-line
-              hour: "2-digit", // eslint-disable-line
-              minute: "2-digit", // eslint-disable-line
-            }) // eslint-disable-line
-          : "",
-      ],
-      ...criteria.map((criterion) => student.criteria[criterion]),
-    ])
-    .draw();
-}
+// function studentListTableView(student: Student): void {
+//   const criteria = [
+//     ...document.querySelectorAll("#student-reputation-table th"),
+//   ]
+//     .slice(2)
+//     .map((header) => header.getAttribute("name"));
+//   // $FlowFixMe
+//   const table = $("#student-reputation-table").DataTable(); // eslint-disable-line
+//   table.row
+//     .add([
+//       ...[
+//         student.email,
+//         student.lastLogin
+//           ? student.lastLogin.toLocaleString(model.language, {
+//               month: "short", // eslint-disable-line
+//               day: "numeric", // eslint-disable-line
+//               year: "numeric", // eslint-disable-line
+//               hour: "2-digit", // eslint-disable-line
+//               minute: "2-digit", // eslint-disable-line
+//             }) // eslint-disable-line
+//           : "",
+//       ],
+//       ...criteria.map((criterion) => student.criteria[criterion]),
+//     ])
+//     .draw();
+// }
 
 /*************/
 /* listeners */

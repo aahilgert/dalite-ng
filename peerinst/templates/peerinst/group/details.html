@@ -349,32 +349,7 @@ https://datatables.net/extensions/buttons/examples/styling/jqueryui.html
       </div>
     </div>
 
-    <div class="foldable">
-      <h2 class="foldable--title mdc-typography--display1 mdc-theme--secondary">
-        {% trans 'Student list' %}
-      </h2>
 
-      <div class="foldable--body">
-
-    <table id='student-reputation-table' class="display">
-      <thead>
-        <tr>
-          <th>{% trans 'Email' %}</th>
-          <th>{% trans 'Last Login' %}</th>
-          {% for criterion in student_reputation_criteria %}
-            <th name="{{ criterion.name }}"
-                title="{{ criterion.description }}">
-              <svg fill="{{ criterion.colour }}">
-                <use xlink:href="#{{ criterion.icon }}"></use>
-              </svg>
-            </th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
 <div class="mdc-snackbar mdc-snackbar--align-start"
      aria-live="assertive"
      aria-atomic="true"
@@ -401,16 +376,6 @@ https://datatables.net/extensions/buttons/examples/styling/jqueryui.html
 <script nonce="{{ request.csp_nonce }}">
 
   bundle.addDialog();
-
-  $(document).ready( function () {
-    $('table.display').each(function() {
-      var table = $(this).DataTable({
-        pageLength: 50,
-        dom: '<"fg-toolbar ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-tl ui-corner-tr"Bf>t<"fg-toolbar ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-bl ui-corner-br"ip>',
-        buttons: ['csv', 'colvis']
-      });
-    });
-  });
 
   $.ajaxSetup({
       beforeSend: function(xhr, settings) {
