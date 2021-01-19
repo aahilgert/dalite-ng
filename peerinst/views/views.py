@@ -2490,9 +2490,18 @@ def report_assignment_aggregates(request):
     - use student_groups and assignment_list passed through request.GET, and
       return JsonReponse as data for report
     """
+    teacher = get_object_or_404(Teacher, user=request.user)
 
     student_groups = request.GET.getlist("student_groups")
     assignment_list = request.GET.getlist("assignments")
+
+    # Ensure only groups belonging to teacher are retained, if empty redirect
+    student_groups = teacher.current_groups.filter(
+        pk__in=student_groups
+    ).values_list("pk")
+
+    if len(student_groups) == 0:
+        return JsonResponse({})
 
     j = []
     for a_str in assignment_list:

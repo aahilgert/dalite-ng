@@ -31,5 +31,5 @@ lxml >= 4.6.2  # Reqd by safety
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys
 -e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums
--e git+https://github.com/SALTISES4/CourseFlow@6d49e6a182c8f963c2fb593d14fe2ea467206c7f#egg=CourseFlow
+-e git+https://github.com/SALTISES4/CourseFlow@dcf151f7cd908e112f4829e14cc1a405683e1720#egg=CourseFlow
 -e git+https://github.com/SALTISES4/UserFeedback@8b25b254ac30a823a500edf7ed60ed1abee32cc6#egg=user_feedback

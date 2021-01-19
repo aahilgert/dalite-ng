@@ -6,7 +6,7 @@
 #
 --index-url https://pypi.python.org/simple
 
--e git+https://github.com/SALTISES4/CourseFlow@6d49e6a182c8f963c2fb593d14fe2ea467206c7f#egg=CourseFlow  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
+-e git+https://github.com/SALTISES4/CourseFlow@dcf151f7cd908e112f4829e14cc1a405683e1720#egg=CourseFlow  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
 -e git+https://github.com/edx/opaque-keys#egg=opaque-keys  # via -r requirements/requirements-base.txt, -r requirements/requirements-test.txt
 -e git+https://github.com/jsumnerPhD/http-observatory#egg=httpobs  # via -r requirements/requirements-dev.in
