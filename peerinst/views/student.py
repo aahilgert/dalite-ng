@@ -19,7 +19,7 @@ from ..models import (
     StudentAssignment,
     StudentGroup,
     StudentGroupAssignment,
-    StudentGroupCourse,
+    #StudentGroupCourse,
     StudentGroupMembership,
     StudentNotification,
 )
@@ -319,7 +319,8 @@ def index_page(req):
         },
         "groups": [
             {
-                "connected_course_url": None
+                "connected_course_url": None,
+                """
                 if not StudentGroupCourse.objects.filter(
                     student_group=group.group
                 )
@@ -331,6 +332,7 @@ def index_page(req):
                         ).course.pk
                     },
                 ),
+                """
                 "name": group.group.name,
                 "teacher": [t.user.pk for t in group.group.teacher.all()],
                 "title": group.group.title,

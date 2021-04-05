@@ -1,3 +1,5 @@
+
+"""
 from django.db import models
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
@@ -38,3 +40,4 @@ def add_to_course_flow(sender, instance, **kwargs):
                 student_group=instance.group
             ).course,
         )
+"""
