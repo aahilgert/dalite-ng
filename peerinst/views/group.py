@@ -21,14 +21,14 @@ from peerinst.models import (
     StudentGroup,
     StudentGroupAssignment,
     Teacher,
-    StudentGroupCourse,
+    #StudentGroupCourse,
 )
 
 from .decorators import group_access_required
 from ..mixins import LoginRequiredMixin, NoStudentsMixin
 from reputation.models import ReputationType
 
-from course_flow.views import get_owned_courses
+#from course_flow.views import get_owned_courses
 
 logger = logging.getLogger("peerinst-views")
 

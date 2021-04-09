@@ -224,10 +224,6 @@ django-ipware==2.1.0
     #   -r requirements/requirements-base.txt
     #   -r requirements/requirements-test.txt
     #   django-axes
-django-model-utils==4.1.1
-    # via
-    #   -r requirements/requirements-base.txt
-    #   -r requirements/requirements-test.txt
 django-samesite-none==0.0.2
     # via
     #   -r requirements/requirements-base.txt
@@ -261,7 +257,6 @@ django==2.2.16
     #   django-csp
     #   django-inlinecss
     #   django-lti-tool-provider
-    #   django-model-utils
     #   django-security-headers
     #   django-sslserver
     #   django-timezone-field

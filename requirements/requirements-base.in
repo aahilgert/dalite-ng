@@ -13,7 +13,6 @@ django-htmlmin
 django-inlinecss
 django-ipware==2.1.0  # Temporary pin awaiting django-axes fix
 django<3.0.0
-django-model-utils
 mysqlclient
 pillow
 pyjwt
@@ -30,7 +29,7 @@ urllib3 > 1.25.8  # Reqd by safety
 lxml >= 4.6.2  # Reqd by safety
 
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
--e git+https://github.com/edx/opaque-keys#egg=opaque-keys
+-e git+https://github.com/edx/opaque-keys#egg=edx_opaque_keys
 -e git+https://github.com/SALTISES4/pinax-forums@dev#egg=pinax_forums
--e git+https://github.com/SALTISES4/CourseFlow@pre-release-cleanup#egg=CourseFlow
+-e git+https://github.com/SALTISES4/CourseFlow@model_testing#egg=Course_Flow
 -e git+https://github.com/SALTISES4/UserFeedback@8b25b254ac30a823a500edf7ed60ed1abee32cc6#egg=user_feedback
